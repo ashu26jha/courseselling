@@ -1,51 +1,37 @@
 import React from "react";
 import { useState, useEffect } from 'react';
-import * as LitJsSdk from "@lit-protocol/lit-node-client";
-const client = new LitJsSdk.LitNodeClient({debug: false});
-
-
-  
-
-
+import { NFTStorage } from 'nft.storage';
+const NFT_STORAGE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGNBNEIxRjVhOEY4NzU5ZTM3REM3RThlRmYxZmMwMUVjMEM1MDJmRUIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY4NjAyNjQ1NzU0MCwibmFtZSI6IkNvdXJzZSBTZWxsaW5nIn0.M0X45502gmB24zP24K6jxJz6R8u3gaHc8rL-piS_-ss'
+const client = new NFTStorage({ token: NFT_STORAGE_KEY });
 const createCourse = () => {
 
     const [courseName, setCourseName] = useState("");
     const [courseCode, setCourseCode] = useState("");
-    const [encryption, setEncryption] = useState("");
-    const [symetric, setSymetry] = useState("");
-
+    const [ImageCID, setImageCID] = useState("");
+    const [tokenURI, settokenURI] = useState("");
+    const [input, setInput] = useState < string | ArrayBuffer | null >(null);
 
     async function handleSubmit() {
-        console.log(courseName, courseCode)
-    }
-    
-    const accessControlConditions = [
-        {
-          contractAddress: '',
-          standardContractType: '',
-          chain: "ethereum",
-          method: 'eth_getBalance',
-          parameters: [
-            ':userAddress',
-            'latest'
-          ],
-          returnValueTest: {
-            comparator: '>=',
-            value: '10000000000000'
-          }
+      console.log(courseName, courseCode)
+      await uploadFile();
+    };
+
+    const uploadFile = async ()=>{
+      const blobhelp = new Blob([input as BlobPart])
+      const nft = {
+        image: blobhelp, 
+        name: `${courseName}`,
+        description: `Metadata for course name: ${courseName} and course code: ${courseCode}`,
+        properties: {
+          type: "course-purchase",
         }
-    ]
-    async function encrypt(){
-        await client.connect()
-        const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain: "ethereum" });
-        // const { encryptedString, symmetricKey } = await LitJsSdk.encryptFile('')
-        // LitJsSdk.decryptFile
+      }
+      const metadata = await client.store(nft);
+      var imgCID: string = metadata.data.image.href;
+      var tokenCID: string = metadata.url;
+      setImageCID(imgCID);
+      settokenURI(tokenCID);
     }
-    
-
-
-    
-
 
     return (
       <div>
@@ -55,8 +41,16 @@ const createCourse = () => {
               <input type="text" className="courseCode" value={courseCode} onChange={(e) => setCourseCode(e.target.value)} />
               <button onClick={handleSubmit}>Create Course</button>
           </div>
-          <button>Encrypt</button>
-          <button>Decrypt</button>
+          Select an image to part of your course
+          <input onChange={(input) => {
+            if (!input.target.files) {
+              return;
+            }
+            let file = input!.target!.files[0]!;
+            let reader = new FileReader();
+            reader.readAsText(file);
+            setInput(reader.result);
+          }} type="file" />
       </div>
     )
 };
