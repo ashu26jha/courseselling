@@ -2,7 +2,8 @@ import React, { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import lighthouse from '@lighthouse-web3/sdk'
 import { ethers } from 'ethers';
-const LIGHTHOUSE_API_KEY = "be64189e.15aac07bb7804b7bbbc339420a77e878";
+const LIGHTHOUSE_API_KEY = "";
+
 function Dropzone({ className }: { className: any }) {
 
     const [fileURL, setFileURL] = useState("");
