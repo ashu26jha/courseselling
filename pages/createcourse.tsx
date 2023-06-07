@@ -1,8 +1,8 @@
 import React from "react";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NFTStorage } from 'nft.storage';
 const NFT_STORAGE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGNBNEIxRjVhOEY4NzU5ZTM3REM3RThlRmYxZmMwMUVjMEM1MDJmRUIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY4NjAyNjQ1NzU0MCwibmFtZSI6IkNvdXJzZSBTZWxsaW5nIn0.M0X45502gmB24zP24K6jxJz6R8u3gaHc8rL-piS_-ss'
-const client = new NFTStorage({ token: NFT_STORAGE_KEY });
+const client = new NFTStorage({ token: process.env.NFT_STORAGE_KEY || "" });
 const createCourse = () => {
 
     const [courseName, setCourseName] = useState("");
