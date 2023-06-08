@@ -3,7 +3,7 @@ import { useState, CSSProperties, useRef, useEffect } from "react"
 export default function ({ slides }: { slides: any }) {
 
     const [currentIndex, setIndex] = useState(0);
-    const timeRef = useRef();
+    const timeRef = useRef(setTimeout(()=>{},0));
 
     const goToPrevious = () => {
         const isFirstSlide = currentIndex === 0;

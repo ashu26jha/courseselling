@@ -1,13 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+body{
+    overflow-x: hidden;
 
+}
 .banner {
     width: 100%;
-    height: 100vh;
+    height: 90vh;
     background-color: black;
 }
-
+.helper{
+    width: 500px;
+    margin: auto;
+}
 body {
     color: white
 }
@@ -17,4 +23,60 @@ body {
     width: "22ch";
     animation: "typing 2s , blink .5s step-end infinite alternate";
     overflow : "hidden";
+}
+.course-title-wrapper, .course-codewrapper, .image-upload-wrapper, .button-fix{
+    justify-content: center;
+    margin: auto;
+    padding: 10px;
+}
+.course-title-wrapper{
+    padding-top: 100px;
+}
+.button-fix:hover{
+    transition: all 0.3s ease;
+    border-color: rgb(92, 16, 127);
+
+}
+.button-fix{
+    border: 2px solid white;
+    margin-top: 40px;
+}
+button{
+    margin-top: 20px;
+    color: rgb(115, 115, 115);
+    cursor: pointer;
+}
+input{
+    color: black;
+    padding-left: 1px;
+}
+input[type=text] {
+    
+    padding: 5px;
+    
+}
+.rules-section{
+    padding: 20px;
+    left: 50%;
+    position: absolute;
+    margin-top: 50px;
+    margin-left: -210px;
+    border-radius: 30px;
+    opacity: 0.7;
+}
+.wrapper{
+    margin-bottom: 20px;
+}
+.rules{
+    margin-bottom: 5px;
+}
+.GodHelpPLS{
+    /* opacity: 0.8; */
+    margin: -4px;
+    float: right;
+    height: 90vh;
+}
+
+.dropbox{
+    margin: auto;
 }
