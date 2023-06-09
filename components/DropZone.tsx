@@ -13,9 +13,6 @@ function Dropzone({ className }: { className: any }) {
         setFileURL(acceptedFiles);
     }, [])
 
-    const progressCallback = (progressData: any) => {
-        console.log("Uploading..");
-    };
 
     const encryptionSignature = async () => {
 
@@ -38,8 +35,7 @@ function Dropzone({ className }: { className: any }) {
             fileURL,
             LIGHTHOUSE_API_KEY,
             sig.publicKey,
-            sig.signedMessage,
-            progressCallback
+            sig.signedMessage
         );
         console.log(response.data.Hash);
         await applyAccessConditions(response.data.Hash)
@@ -90,13 +86,6 @@ function Dropzone({ className }: { className: any }) {
         console.log("Access conditions applied ",response);
 
     }
-
-    async function upload() {
-        const uploadResponse = await lighthouse.upload(fileURL, "be64189e.15aac07bb7804b7bbbc339420a77e878");
-        setFileURL("");
-        console.log(uploadResponse)
-    }
-
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 

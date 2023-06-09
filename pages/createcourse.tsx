@@ -1,4 +1,4 @@
-import React, { useCallback, useState, CSSProperties } from 'react'
+import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import lighthouse from '@lighthouse-web3/sdk'
 import Navbar from "../components/Navbar"
@@ -62,9 +62,11 @@ const createCourse = () => {
             </div>
 
             <div {...getRootProps({})} className='p-16 mt-10 ml-40 mr-40 w-1/2 border border-neutral-200 dropbox'>
+              
               <input {...getInputProps()} />
               {fileURL? (fileURL[0]).name : isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
             </div>
+            
             <div className="button-wrapper flex">
               <button onClick={handleSubmit} className="button-fix text-xl">Create Course</button>
             </div>

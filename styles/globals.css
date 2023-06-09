@@ -80,3 +80,27 @@ input[type=text] {
 .dropbox{
     margin: auto;
 }
+.recordRoom{
+    background-color: black;
+
+}
+.lectures{
+    /* height: 200px; */
+    background: linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0)) padding-box, linear-gradient(to right, #ce9b00,  darkorchid, rgb(125, 125, 211)) border-box;
+    border-radius: 5px;
+    border: 2px solid transparent;
+}
+p{
+    padding: 4px;
+    margin-left: 4px;
+}
+.add{
+    color: #39FF14;   
+}
+.huddle{
+    background: linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0)) padding-box, linear-gradient(to right, #f77ed9,  rgb(29, 29, 217)) border-box;
+    border-radius: 5px;
+    border-bottom: 10px solid transparent;
+    /* filter:blur(10px) */
+    /* box-shadow: 0 30px 40px rgba(0,0,0,0.1); */
+}
