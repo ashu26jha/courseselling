@@ -79,6 +79,11 @@ input[type=text] {
 
 .dropbox{
     margin: auto;
+    height: 200px;
+    margin-top: 30px;
+    background: linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0)) padding-box, linear-gradient(to right, #ff94e1,  rgb(91, 50, 204),rgb(91, 50, 204), rgb(106, 50, 204),rgb(183, 202, 255)) border-box;
+    border-radius: 5px;
+    border: 2px solid transparent;
 }
 .recordRoom{
     background-color: black;
@@ -97,10 +102,11 @@ p{
 .add{
     color: #39FF14;   
 }
-.huddle{
-    background: linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0)) padding-box, linear-gradient(to right, #f77ed9,  rgb(29, 29, 217)) border-box;
-    border-radius: 5px;
-    border-bottom: 10px solid transparent;
-    /* filter:blur(10px) */
-    /* box-shadow: 0 30px 40px rgba(0,0,0,0.1); */
+
+#strip{
+    height: 30px;
+    transform: (1,-1);
+}
+.svghelp{
+    transform: scale(1,-1);
 }

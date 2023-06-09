@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { HuddleIframe, iframeApi, useEventListner } from "@huddle01/iframe";
 import { useDropzone } from 'react-dropzone';
 import { ethers } from 'ethers';
+import Huddle01Graphics from "../components/Huddle01Graphics";
 import lighthouse from '@lighthouse-web3/sdk';
 const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
 const recordRoom = () => {
@@ -42,6 +43,15 @@ const recordRoom = () => {
         iframeApi.initialize({
             wallets: ["metamask"],
         });
+    });
+
+    useEventListner("room:joined", () => {
+        var temp = document.getElementById('strip');
+        var temp1 = temp?.style;
+        if(temp1==null){
+            return
+        }
+        temp1.display = 'none';
     });
 
     const onDrop = useCallback((acceptedFiles: any) => {
@@ -139,9 +149,12 @@ const recordRoom = () => {
                     </div>
                 </div>
             </div>
-            <div {...getRootProps({})} className='p-16 mt-10 ml-40 mr-40 w-1/2 border border-neutral-200 dropbox'>
+            <div className="w-3/4" id="strip">
+                <Huddle01Graphics/>    
+            </div>
+            <div {...getRootProps({})} className='p-16 mt-10 ml-40 mr-40 w-1/2 dropbox'>
               <input {...getInputProps()} />
-              {fileURL? (fileURL[0]).name : isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
+              {fileURL? (fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
             </div>
         </div>
     )
