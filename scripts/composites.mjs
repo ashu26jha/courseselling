@@ -23,7 +23,7 @@ export const writeComposite = async (spinner) => {
   spinner.info("writing composite to Ceramic");
   const composite = await createComposite(
     ceramic,
-    "./composites/prompt.graphql"
+    "./composites/CourseDetails.graphql"
   );
   await writeEncodedComposite(composite, "./src/__generated__/definition.json");
   spinner.info("creating composite for runtime usage");

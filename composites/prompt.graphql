@@ -1,3 +1,0 @@
-type prompt @createModel(accountRelation: LIST, description: "A GPT prompt") {
-  text: String! @string(maxLength: 5000)
-}
