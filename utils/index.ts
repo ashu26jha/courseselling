@@ -1,9 +1,9 @@
 import { DIDSession } from "did-session";
 import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
-import type { CeramicApi } from "@ceramicnetwork/common"
+import type { CeramicApi } from "@ceramicnetwork/common";
 import type { ComposeClient } from "@composedb/client";
 
-// If you are relying on an injected provider this must be here otherwise you will have a type error. 
+// If you are relying on an injected provider this must be here otherwise you will have a type error.
 declare global {
   interface Window {
     ethereum: any;
@@ -16,13 +16,13 @@ declare global {
  */
 export const authenticateCeramic = async (
   ceramic: CeramicApi,
-  compose: ComposeClient
+  compose: ComposeClient,
 ) => {
-  const sessionStr = localStorage.getItem('did') // for production you will want a better place than localStorage for your sessions.
-  let session
+  const sessionStr = localStorage.getItem("did"); // for production you will want a better place than localStorage for your sessions.
+  let session;
 
   if (sessionStr) {
-    session = await DIDSession.fromSession(sessionStr)
+    session = await DIDSession.fromSession(sessionStr);
   }
 
   if (!session || (session.hasSession && session.isExpired)) {
@@ -36,11 +36,11 @@ export const authenticateCeramic = async (
     const addresses = await ethProvider.enable({
       method: "eth_requestAccounts",
     });
-    const accountId = await getAccountId(ethProvider, addresses[0])
+    const accountId = await getAccountId(ethProvider, addresses[0]);
     const authMethod = await EthereumWebAuth.getAuthMethod(
       ethProvider,
-      accountId
-    )
+      accountId,
+    );
 
     /**
      * Create DIDSession & provide capabilities that we want to access.
@@ -49,14 +49,14 @@ export const authenticateCeramic = async (
      */
     // TODO: update resources to only provide access to our composities
     session = await DIDSession.authorize(authMethod, {
-      resources: ["ceramic://*"]
-    })
+      resources: ["ceramic://*"],
+    });
     // Set the session in localStorage.
-    localStorage.setItem('did', session.serialize());
+    localStorage.setItem("did", session.serialize());
   }
 
   // Set our Ceramic DID to be our session DID.
-  compose.setDID(session.did)
-  ceramic.did = session.did
-  return
-}
+  compose.setDID(session.did);
+  ceramic.did = session.did;
+  return true;
+};

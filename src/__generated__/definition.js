@@ -1,0 +1,2 @@
+// This is an auto-generated file, do not edit manually
+export const definition = {"models":{"prompt":{"id":"kjzl6hvfrbw6c5idmbcjiubpe9927wdd1o1u62i8wtbrx5itie9s0ep0im6djap","accountRelation":{"type":"list"}}},"objects":{"prompt":{"text":{"type":"string","required":true}}},"enums":{},"accountData":{"promptList":{"type":"connection","name":"prompt"}}}
