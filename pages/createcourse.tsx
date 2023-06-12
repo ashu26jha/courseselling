@@ -19,7 +19,6 @@ const createCourse = () => {
 
   const handleLogin = async () => {
     await authenticateCeramic(ceramic, composeClient)
-    // console.log(ceramic.did._parentId)
     await GetCourseDetails()
   }
 
@@ -44,6 +43,7 @@ const createCourse = () => {
                 }
             }`
       );
+      console.log(profile.data!.courseDetailsIndex.edges[0].node.lectureName[0][1])
     }
     else {
       console.log("Lmao skipped")

@@ -147,6 +147,7 @@ const recordRoom = () => {
                                 courseCreator {
                                     id
                                 }
+                                lectureName
                                 id
                             }
                         }
@@ -159,28 +160,17 @@ const recordRoom = () => {
                         const streamID = response.data!.courseDetailsIndex.edges[i].node.id;
                         const courseID = response.data!.courseDetailsIndex.edges[i].node.courseCode;
                         const courseName = response.data!.courseDetailsIndex.edges[i].node.courseName;
-                        var CIDs = response.data!.courseDetailsIndex.edges[i].node.videoLecture;
-                        var Lectures = response.data!.courseDetailsIndex.edges[i].node.lectureName;
-                        console.log("CID FROM",CID)
-                        console.log("Lectures FROM",Lectures)
-                        if (CIDs == null || Lectures==null) {
-                            CIDs = [CID];
-                            
-                            console.log("CID KI MAA")
+                        var CIDs = [];
+                        var Lectures = [];
+                        if(response.data!.courseDetailsIndex.edges[0].node.lectureName!=null){
+                            for(var j = 0 ; j < response.data!.courseDetailsIndex.edges[0].node.lectureName.length; j++){
+                                CIDs.push(response.data!.courseDetailsIndex.edges[i].node.videoLecture[j]);
+                                Lectures.push(response.data!.courseDetailsIndex.edges[i].node.lectureName[j])
+                            }
                         }
-                        if(Lectures == null) {
-                            Lectures = [lectureTitle];
-                            console.log("Lecture ki MAA")
-                        }
-                        else {
-                            console.log("PLS Chal")
-                            CIDs.push(CID);
-                            Lectures.push(lectureTitle)
-                            console.log(Lectures)
-                        }
-                        console.log(streamID)
-                        console.log(courseName);
-                        console.log(courseID)
+                        
+                        CIDs.push(CID);
+                        Lectures.push(lectureTitle);
                         const update = await composeClient.executeQuery(`
                             mutation MyMutation {
                                 updateCourseDetails(
