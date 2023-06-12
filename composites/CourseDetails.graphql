@@ -2,6 +2,8 @@ type CourseDetails @createModel (accountRelation: LIST, description: "Course Det
     courseCreator: DID! @documentAccount
     courseName: String! @string(minLength: 3, maxLength: 50)
     courseCode: String! @string(minLength: 1, maxLength: 50)
-    videoLecture: [CID] @list(maxLength: 200)
+    lectureName: [String] @string(minLength: 3, maxLength: 50) @list(maxLength: 200)
+    videoLecture: [String] @string(minLength: 3, maxLength: 50) @list(maxLength: 200)
     version: CommitID! @documentVersion
+
 }

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { HuddleIframe, iframeApi, useEventListner } from "@huddle01/iframe";
 import { useDropzone } from 'react-dropzone';
 import { ethers } from 'ethers';
+import { useCeramicContext } from '../context'
+import { authenticateCeramic } from '../utils'
 import Huddle01Graphics from "../components/Huddle01Graphics";
 import lighthouse from '@lighthouse-web3/sdk';
 const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
@@ -11,6 +13,19 @@ const recordRoom = () => {
     const [lectureCID, setLectureCID] = useState("");
     const [lectures, setLectures] = useState([{}]);
     const [fileURL, setFileURL] = useState("");
+    const [courseCreator, setCourseCreator] = useState("");
+
+    const clients = useCeramicContext()
+    const { ceramic, composeClient } = clients
+
+    const handleLogin = async () => {
+        await authenticateCeramic(ceramic, composeClient)
+        console.log(ceramic)
+    }
+
+    useEffect(() => {
+        handleLogin()
+    }, [])
 
     const obectRef = {
         "title": "",
@@ -48,7 +63,7 @@ const recordRoom = () => {
     useEventListner("room:joined", () => {
         var temp = document.getElementById('strip');
         var temp1 = temp?.style;
-        if(temp1==null){
+        if (temp1 == null) {
             return
         }
         temp1.display = 'none';
@@ -104,19 +119,97 @@ const recordRoom = () => {
     }
 
     const uploadFileEncrypted = async () => {
-        console.log(fileURL)
+        
         const sig = await encryptionSignature();
+        
         const response = await lighthouse.uploadEncrypted(
             fileURL,
             LIGHTHOUSE_API_KEY,
             sig.publicKey,
             sig.signedMessage
         );
+
         console.log(response);
         setLectureCID(response.data.Hash);
-        var CID:string = response.data.Hash
+        var CID: string = response.data.Hash
         console.log(response.data.Hash);
         console.log("Lecture CID : ", lectureCID);
+
+        if (ceramic.did !== undefined) {
+            const response = await composeClient.executeQuery(`
+                query CourseDetailsFetch {
+                    courseDetailsIndex(first: 100) {
+                        edges {
+                            node {
+                                courseCode
+                                courseName
+                                videoLecture
+                                courseCreator {
+                                    id
+                                }
+                                id
+                            }
+                        }
+                    }
+                }`
+            );
+            try {
+                for (var i = 0; i < response.data!.courseDetailsIndex.edges.length; i++) {
+                    if (response.data!.courseDetailsIndex.edges[i].node.courseCreator.id == ceramic.did._parentId) {
+                        const streamID = response.data!.courseDetailsIndex.edges[i].node.id;
+                        const courseID = response.data!.courseDetailsIndex.edges[i].node.courseCode;
+                        const courseName = response.data!.courseDetailsIndex.edges[i].node.courseName;
+                        var CIDs = response.data!.courseDetailsIndex.edges[i].node.videoLecture;
+                        var Lectures = response.data!.courseDetailsIndex.edges[i].node.lectureName;
+                        console.log("CID FROM",CID)
+                        console.log("Lectures FROM",Lectures)
+                        if (CIDs == null || Lectures==null) {
+                            CIDs = [CID];
+                            
+                            console.log("CID KI MAA")
+                        }
+                        if(Lectures == null) {
+                            Lectures = [lectureTitle];
+                            console.log("Lecture ki MAA")
+                        }
+                        else {
+                            console.log("PLS Chal")
+                            CIDs.push(CID);
+                            Lectures.push(lectureTitle)
+                            console.log(Lectures)
+                        }
+                        console.log(streamID)
+                        console.log(courseName);
+                        console.log(courseID)
+                        const update = await composeClient.executeQuery(`
+                            mutation MyMutation {
+                                updateCourseDetails(
+                                input: {content: {courseName: "${courseName}", courseCode: "${courseID}",  videoLecture: "${CIDs}", lectureName: "${Lectures}" }, options: {replace: true}, id: "${streamID}"}
+                                ) {
+                                document {
+                                    id
+                                    courseName
+\                                   courseCode
+                                    videoLecture
+                                    lectureName
+                                }
+                                }
+                            }
+                        `);
+                        console.log(update);
+                        break;
+                    }
+
+                }
+            }
+            catch (e) {
+                if (e instanceof Error) {
+                    console.log(e.message);
+                }
+                console.log(e)
+            }
+
+        }
 
         await applyAccessConditions(response.data.Hash)
 
@@ -124,7 +217,7 @@ const recordRoom = () => {
             CID
         })
     }
-    
+
     return (
         <div className="recordRoom">
             <div className="flex ">
@@ -137,7 +230,7 @@ const recordRoom = () => {
                         Record the lecture, drop the files below,<br /> add lecture name and hit +
                     </div>
                     {lectures.length > 1 ? lectures.map((a, index) => {
-                        var help:any = a ;
+                        var help: any = a;
                         return (
                             <>
                                 {index != 0 ? <div className="mt-2 ml-10 lectures w-3/4" key={index}><p key={index}>{index}. {help.title}</p></div> : <></>}
@@ -150,11 +243,11 @@ const recordRoom = () => {
                 </div>
             </div>
             <div className="w-3/4" id="strip">
-                <Huddle01Graphics/>    
+                <Huddle01Graphics />
             </div>
             <div {...getRootProps({})} className='p-16 mt-10 ml-40 mr-40 w-1/2 dropbox'>
-              <input {...getInputProps()} />
-              {fileURL? (fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
+                <input {...getInputProps()} />
+                {fileURL ? (fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
             </div>
         </div>
     )
