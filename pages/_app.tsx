@@ -1,9 +1,12 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
+import {CeramicWrapper} from "../context";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (
-    <Component {...pageProps}  />
+    <CeramicWrapper>
+      <Component {...pageProps} ceramic />
+    </CeramicWrapper>
   );
 };
 
