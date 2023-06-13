@@ -4,6 +4,7 @@
 .Cards{
     margin-top: 50px;
     cursor: pointer;
+    background-color: #1d1d1d;
 }
 .Cards:hover{
     opacity: 0.9;
@@ -14,7 +15,7 @@ body{
 
 }
 .card-text{
-    color: black;
+    
 }
 h1{
     color: black;

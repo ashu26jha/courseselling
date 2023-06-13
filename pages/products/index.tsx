@@ -5,9 +5,6 @@ import CourseDetails from '../../CourseDetail'
 import Navbar from '../../components/Navbar'
 import { useEffect, useState } from "react";
 
-interface CourseDetail{
-    courseCode: string
-}
 
 export default function () {
     const clients = useCeramicContext()
@@ -28,19 +25,12 @@ export default function () {
             var profile = await composeClient.executeQuery(CourseDetails);
             setCourseDetails(profile.data!.courseDetailsIndex.edges)
         }
-        else {
-            console.log("Lmao skipped")
-        }
     }
 
     useEffect(() => {
         handleLogin();
     }, [])
     
-    console.log('S')
-    const a = "LOL";
-    const b = "LMAO"
-    console.log(CourseDetails)
     return (
         <div className="banner">
             <Navbar/>
