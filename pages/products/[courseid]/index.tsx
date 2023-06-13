@@ -15,6 +15,7 @@ export default function () {
     const { ceramic, composeClient } = clients
     const [courseDetails, setCourseDetails] = useState<any[]>([])
     const [lectureNames, setlectureNames] = useState(['']);
+    const [cidToDecrypt, setcidToDecrypt] = useState('');
 
     const handleLogin = async () => {
         await authenticateCeramic(ceramic, composeClient)
@@ -47,7 +48,10 @@ export default function () {
                     setlectureNames(lectureNameTemp)
                 }
             }
+
         }
+
+
         
     },[courseDetails])
 

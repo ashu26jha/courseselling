@@ -2,7 +2,7 @@ import {useEffect, useState, useRef} from "react";
 
 export default function () {
 
-    const [imgURL, setimgURL] = useState("../images/White_Logo.png");
+    const [imgURL, setimgURL] = useState("/images/White_Logo.png");
     const [color, setColor] = useState(true);
 
     const changeColor=()=>{
