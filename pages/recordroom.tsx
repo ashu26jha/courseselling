@@ -97,7 +97,7 @@ const recordRoom = () => {
                 chain: "Mumbai",
                 method: "balanceOf",
                 standardContractType: "ERC1155",
-                contractAddress: "0x16eCb7d5E76A1B0DfD54A9BE9293c35866CD6674",
+                contractAddress: "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E",
                 returnValueTest: { comparator: ">=", value: "1" },
                 parameters: [":userAddress"],
             },
@@ -148,18 +148,21 @@ const recordRoom = () => {
                                     id
                                 }
                                 lectureName
+                                price
                                 id
                             }
                         }
                     }
                 }`
             );
+            console.log(response)
             try {
                 for (var i = 0; i < response.data!.courseDetailsIndex.edges.length; i++) {
                     if (response.data!.courseDetailsIndex.edges[i].node.courseCreator.id == ceramic.did._parentId) {
                         const streamID = response.data!.courseDetailsIndex.edges[i].node.id;
                         const courseID = response.data!.courseDetailsIndex.edges[i].node.courseCode;
                         const courseName = response.data!.courseDetailsIndex.edges[i].node.courseName;
+                        const price = response.data!.courseDetailsIndex.edges[i].node.price;
                         var CIDs = [];
                         var Lectures = [];
                         if(response.data!.courseDetailsIndex.edges[0].node.lectureName!=null){
@@ -171,15 +174,18 @@ const recordRoom = () => {
                         
                         CIDs.push(CID);
                         Lectures.push(lectureTitle);
+                        console.log(CIDs)
+                        console.log(parseInt(price))
                         const update = await composeClient.executeQuery(`
                             mutation MyMutation {
                                 updateCourseDetails(
-                                input: {content: {courseName: "${courseName}", courseCode: "${courseID}",  videoLecture: "${CIDs}", lectureName: "${Lectures}" }, options: {replace: true}, id: "${streamID}"}
+                                input: {content: {price: ${parseInt(price)}, courseName: "${courseName}", courseCode: "${courseID}",  videoLecture: "${CIDs}", lectureName: "${Lectures}" }, options: {replace: true}, id: "${streamID}"}
                                 ) {
                                 document {
                                     id
+                                    price
                                     courseName
-\                                   courseCode
+                                    courseCode
                                     videoLecture
                                     lectureName
                                 }

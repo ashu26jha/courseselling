@@ -51,11 +51,7 @@ export const writeComposite = async (spinner) => {
   );
   await writeEncodedComposite(TimeStampsComposite, './src/__generated__/TimeStamps.json')
 
-  await mergeEncodedComposites(ceramic,'./src/__generated__/CourseDetails.json','./src/__generated__/definition.json');
-  await mergeEncodedComposites(ceramic,'./src/__generated__/Reviews.json','./src/__generated__/definition.json');
-  await mergeEncodedComposites(ceramic,'./src/__generated__/CourseXReviews.json','./src/__generated__/definition.json');
-  await mergeEncodedComposites(ceramic,'./src/__generated__/TimeStamps.json','./src/__generated__/definition.json');
-
+  await mergeEncodedComposites(ceramic,['./src/__generated__/CourseDetails.json','./src/__generated__/Reviews.json','./src/__generated__/CourseXReviews.json','./src/__generated__/TimeStamps.json'],'./src/__generated__/definition.json');
 
   await writeEncodedCompositeRuntime(
     ceramic,
