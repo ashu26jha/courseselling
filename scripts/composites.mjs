@@ -54,5 +54,6 @@ const authenticate = async () => {
     provider: new Ed25519Provider(key),
   });
   await did.authenticate();
+  console.log(did);
   ceramic.did = did;
 };
