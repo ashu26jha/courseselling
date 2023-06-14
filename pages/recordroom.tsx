@@ -163,19 +163,31 @@ const recordRoom = () => {
                         const courseID = response.data!.courseDetailsIndex.edges[i].node.courseCode;
                         const courseName = response.data!.courseDetailsIndex.edges[i].node.courseName;
                         const price = response.data!.courseDetailsIndex.edges[i].node.price;
-                        var CIDs = [];
-                        var Lectures = [];
-                        if(response.data!.courseDetailsIndex.edges[0].node.lectureName!=null){
-                            for(var j = 0 ; j < response.data!.courseDetailsIndex.edges[0].node.lectureName.length; j++){
-                                CIDs.push(response.data!.courseDetailsIndex.edges[i].node.videoLecture[j]);
-                                Lectures.push(response.data!.courseDetailsIndex.edges[i].node.lectureName[j])
-                            }
+                        const VideoCID = response.data!.courseDetailsIndex.edges[i].node.videoLecture;
+                        const Name = response.data!.courseDetailsIndex.edges[i].node.lectureName;
+                        if(VideoCID==undefined){
+                            const update = await composeClient.executeQuery(`
+                                mutation MyMutation {
+                                    updateCourseDetails(
+                                    input: {content: {price: ${parseInt(price)}, courseName: "${courseName}", courseCode: "${courseID}",  videoLecture: "${[CID]}", lectureName: "${lectureTitle}" }, options: {replace: true}, id: "${streamID}"}
+                                    ) {
+                                        document {
+                                            id
+                                            price
+                                            courseName
+                                            courseCode
+                                            videoLecture
+                                            lectureName
+                                            }
+                                        }
+                                    }
+                                `);
+                            console.log(update);
+                            break;
                         }
+                        const CIDs = [...VideoCID,CID];
+                        var Lectures = [...Name,lectureTitle];
                         
-                        CIDs.push(CID);
-                        Lectures.push(lectureTitle);
-                        console.log(CIDs)
-                        console.log(parseInt(price))
                         const update = await composeClient.executeQuery(`
                             mutation MyMutation {
                                 updateCourseDetails(

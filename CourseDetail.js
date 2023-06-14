@@ -13,6 +13,7 @@ const CourseDetail =
                     }
                     id
                     lectureName
+                    price
                 }
             }
         }
