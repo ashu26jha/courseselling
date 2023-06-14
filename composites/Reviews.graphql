@@ -1,0 +1,11 @@
+type CourseDetails @loadModel(id: "kjzl6hvfrbw6c9qkmmdjf65qfauuy7jpo334jrsgvwd1bru3x0b0rat15zzk8e6"){
+    id: ID!
+}
+
+type Reviews @createModel(accountRelation: LIST, description: "Review for courses"){
+    CourseDetailsID: StreamID! @documentReference(model: "CourseDetails")
+    coursedetails: CourseDetails! @relationDocument(property: "CourseDetailsID")
+    author: DID! @documentAccount
+    text: String! @string(maxLength: 500)
+    rating: Int!
+}

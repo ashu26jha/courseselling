@@ -1,0 +1,7 @@
+type Reviews @loadModel(id: "kjzl6hvfrbw6c54wihrwjeb9wo5m938qu55m9hm7elemwniadzmta8mqt29zqvf") {
+  id: ID!
+}
+
+type CourseDetails @loadModel(id: "kjzl6hvfrbw6c9qkmmdjf65qfauuy7jpo334jrsgvwd1bru3x0b0rat15zzk8e6"){
+  reviews: [Reviews] @list(maxLength: 200) @relationFrom(model: "Reviews", property: "CourseDetailsID")
+}

@@ -1,0 +1,11 @@
+type CourseDetails @loadModel(id: "kjzl6hvfrbw6c9qkmmdjf65qfauuy7jpo334jrsgvwd1bru3x0b0rat15zzk8e6"){
+    id: ID!
+}
+
+type TimeStamps @createModel(accountRelation: LIST, description: " "){
+    CourseDetailsID: StreamID! @documentReference(model: "CourseDetails")
+    coursedetails: CourseDetails! @relationDocument(property: "CourseDetailsID")
+    timestampCreator: DID @documentAccount
+    timestampFor: DID @accountReference
+    timestamp: [Int] @list (maxLength: 200)
+}

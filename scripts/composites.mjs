@@ -2,6 +2,7 @@ import { readFileSync } from "fs";
 import { CeramicClient } from "@ceramicnetwork/http-client";
 import {
   createComposite,
+  mergeEncodedComposites,
   readEncodedComposite,
   writeEncodedComposite,
   writeEncodedCompositeRuntime,
@@ -21,18 +22,47 @@ const ceramic = new CeramicClient("http://localhost:7007");
 export const writeComposite = async (spinner) => {
   await authenticate();
   spinner.info("writing composite to Ceramic");
-  const composite = await createComposite(
+
+  // CourseDetail Composite
+  const CourseDetailsComposite = await createComposite(
     ceramic,
     "./composites/CourseDetails.graphql"
   );
-  await writeEncodedComposite(composite, "./src/__generated__/definition.json");
-  spinner.info("creating composite for runtime usage");
+  await writeEncodedComposite(CourseDetailsComposite,'./src/__generated__/CourseDetails.json');
+
+  // Reviews Composite 
+  const ReviewsComposite = await createComposite(
+    ceramic,
+    "./composites/Reviews.graphql"
+  );
+  await writeEncodedComposite(ReviewsComposite, './src/__generated__/Reviews.json');
+
+  // CourseXReviews Composite
+  const CourseXReviewsComposite = await createComposite(
+    ceramic,
+    "./composites/CourseXReviews.graphql"
+  );
+  await writeEncodedComposite(CourseXReviewsComposite, './src/__generated__/CourseXReviews.json');
+
+  //TimeStamps Composite
+  const TimeStampsComposite = await createComposite(
+    ceramic,
+    "./composites/TimeStamps.graphql"
+  );
+  await writeEncodedComposite(TimeStampsComposite, './src/__generated__/TimeStamps.json')
+
+  await mergeEncodedComposites(ceramic,'./src/__generated__/CourseDetails.json','./src/__generated__/definition.json');
+  await mergeEncodedComposites(ceramic,'./src/__generated__/Reviews.json','./src/__generated__/definition.json');
+  await mergeEncodedComposites(ceramic,'./src/__generated__/CourseXReviews.json','./src/__generated__/definition.json');
+  await mergeEncodedComposites(ceramic,'./src/__generated__/TimeStamps.json','./src/__generated__/definition.json');
+
+
   await writeEncodedCompositeRuntime(
     ceramic,
-    "./src/__generated__/definition.json",
-    "./src/__generated__/definition.js"
-  );
-  spinner.info("deploying composite");
+    './src/__generated__/definition.json',
+    './src/__generated__/definition.js'
+  )
+  
   const deployComposite = await readEncodedComposite(
     ceramic,
     "./src/__generated__/definition.json"
