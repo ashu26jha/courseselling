@@ -28,9 +28,9 @@ export default function () {
 
     useEffect(()=>{
         if(courseDetails.length!=0){
-            for(var i = 0 ; i < courseDetails.length ; i++){
-                if(courseDetails[i].node.courseCode == CourseID){
-                    var lectureNameTemp = [];
+            for(var i = 0 ; i < courseDetails.length ; i++){                                        // *********************
+                if(courseDetails[i].node.courseCode == CourseID && courseDetails[i].node.price>10){ // REMOVE AND CONDITON *
+                    var lectureNameTemp = [];                                                       //********************** 
                     const size = courseDetails[i].node.lectureName[0].length;
                     var temp = '';
                     for( var j = 0 ; j <= size ; j++){

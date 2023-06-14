@@ -22,7 +22,7 @@ const Testing = () => {
         <div>
             
             <div id="timer" className="text-black"> </div>
-            <video src='./videos/Unstoppable.mp4' id="myVideo" width="600" height="600" controls>
+            <video src='./videos/Unstoppable.mp4' id="myVideo" width="800" height="800" className="ml-10"  controls autoPlay={true}>
 
             </video>
         </div>

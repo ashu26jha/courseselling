@@ -8,7 +8,9 @@ import Navbar from '../../../../components/Navbar';
 import LectureNames from "../../../../components/LectureNames";
 const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
 import lighthouse from '@lighthouse-web3/sdk';
-
+// *********************************
+// REMOVE AND CONDITION OF PRICE   *  LINE 50 74
+//********************************** 
 
 export default function () {
 
@@ -35,18 +37,21 @@ export default function () {
     },[lectureNames])
 
     useEffect(()=>{
-        async function help(){
-            await decrypt();
+        if(cidToDecrypt!=''){
+            const help = async function(){
+                await decrypt();
+            }
+            help()
         }
-        help()
+        
     },[cidToDecrypt]);
 
     useEffect(()=>{
         console.log(courseDetails)
         if(courseDetails.length!=0){
-            for(var i = 0 ; i < courseDetails.length ; i++){
-                if(courseDetails[i].node.courseCode == courseid){
-                    setCourseName(courseDetails[i].node.courseName)
+            for(var i = 0 ; i < courseDetails.length ; i++){                                        // ***********************
+                if(courseDetails[i].node.courseCode == courseid && courseDetails[i].node.price>10){ // * REMOVE AND CONDITON *
+                    setCourseName(courseDetails[i].node.courseName)                                 //************************
                     var lectureNameTemp = [];
                     const size = courseDetails[i].node.lectureName[0].length;
                     var temp = '';
@@ -69,7 +74,7 @@ export default function () {
             
         }
         for(var i = 0 ; i < courseDetails.length ; i++){
-            if(courseDetails[i].node.courseCode == courseid){
+            if(courseDetails[i].node.courseCode == courseid && courseDetails[i].node.price>10){ /// REMOVE CONDITION
                 var lectureCID='';
                 var counter = 0 ;
                 const size = courseDetails[i].node.videoLecture[0].length;
@@ -164,17 +169,17 @@ export default function () {
                         {courseName}
                     </div>
                     <div className=" m-4 text-xl">
-                        {lectureNames.length > 1 ? <>{lectureNames[lectureid]}</>:<></>}
+                        {lectureNames.length > 1 ? <>Topic: {lectureNames[lectureid]}</>:<></>}
                     </div>
 
                     <div>
-                        <video id="vidplayer" width="320" height="240" controls>
+                        <video id="vidplayer" width="800" height="800" controls className="m-10">
 
                         </video>
                     </div>
                 </div>
-                <div className="ml-auto w-fit">
-                    <div className="mt-2 mb-4 ml-2 text-2xl">
+                <div className="ml-auto w-fit mr-10 mt-6">
+                    <div className="mt-2 mb-8 ml-2 text-2xl">
                         Course content
                     </div>
                     {
