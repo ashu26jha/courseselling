@@ -5,94 +5,81 @@ import { authenticateCeramic } from '../utils'
 import lighthouse from '@lighthouse-web3/sdk'
 import Navbar from "../components/Navbar"
 
+/*********************************
+ * 1. ADD CONTRACT INTEGRATION   *    
+ * 2. ADD IMAGEURI TO COMPOSEDB  *               
+ *********************************/
+
 const createCourse = () => {
 
   const [courseName, setCourseName] = useState("");
   const [courseCode, setCourseCode] = useState("");
+  const [coursePrice, setCoursePrice] = useState("")
   const [ImageCID, setImageCID] = useState("");
-  const [tokenURI, settokenURI] = useState();
+  const [tokenURI, settokenURI] = useState("");
   const [fileURL, setFileURL] = useState("");
 
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
 
+  useEffect(()=>{
+
+    if(ImageCID!=''){
+      const helper = async function() {
+        await CreateCourse();
+      }
+      helper();
+    }
+    
+  },[ImageCID])
+
+  useEffect (()=>{
+    // ADD CONTRACT FUCNTIONS HERE
+    if(tokenURI!=''){
+      const helper = async function (){
+
+      }
+      helper
+    }
+  },[tokenURI])
 
   const handleLogin = async () => {
     await authenticateCeramic(ceramic, composeClient)
-    await GetCourseDetails()
-  }
-
-  const GetCourseDetails = async () => {
-    if (ceramic.did !== undefined) {
-      const profile = await composeClient.executeQuery(`
-            query CourseDetailsFetch {
-                courseDetailsIndex(first: 10) {
-                    edges {
-                        node {
-                            courseCode
-                            courseName
-                            version
-                            videoLecture
-                            courseCreator {
-                                id
-                            }
-                            id
-                            lectureName
-                        }
-                    }
-                }
-            }`
-      );
-      console.log(profile.data!.courseDetailsIndex.edges[0].node.lectureName[0][1])
-    }
-    else {
-      console.log("Lmao skipped")
-    }
   }
 
   const CreateCourse = async () => {
     if (ceramic.did !== undefined) {
       const update = await composeClient.executeQuery(`
         mutation MyMutation {
-            createCourseDetails(input: {content: {courseCode: "${courseCode}", courseName: "${courseName}"}}) {
+            createCourseDetails(input: {content: {price: ${parseInt(coursePrice)}, courseCode: "${courseCode}", courseName: "${courseName}"}}) {
               document {
                 courseCode
                 courseName
-                
+                price
               }
             }
           }
         `);
       console.log(update)
-      await GetCourseDetails()
     }
   }
 
   useEffect(() => {
-    
     handleLogin()
   }, [])
 
 
   async function handleSubmit() {
-    console.log(courseName, courseCode)
-    // Add to ceramic
-    await CreateCourse();
-    // Add to lighthouse.storage
+    console.log(courseName, courseCode, coursePrice)
     await uploadFile();
-
-    // RUN CONTRACT FUNCTIONS
   };
 
   const uploadFile = async () => {
     const uploadResponse = await lighthouse.upload(fileURL, "be64189e.15aac07bb7804b7bbbc339420a77e878");
     setImageCID(uploadResponse.data.Hash);
-    console.log(typeof (uploadResponse.data.Hash))
     const metaData = `{"title":${courseName},"type":"object","properties":{"name":{"type": "string","description": "Meta data for ${courseName}"},"courseID":{"type": "string","description": ${courseCode}},"image":{"type": "string","description": "https://ipfs.io/ipfs/${uploadResponse.data.Hash}"}}}`
-    // const json = JSON.stringify(metaData);
     const outputMetaData = await lighthouse.uploadBuffer(metaData, "be64189e.15aac07bb7804b7bbbc339420a77e878");
-    console.log(outputMetaData.data.Hash);
-
+    settokenURI(outputMetaData.data.Hash);
   };
 
   const onDrop = useCallback((acceptedFiles: any) => {
@@ -110,17 +97,24 @@ const createCourse = () => {
           <div className="helper">
 
             <div className="course-title-wrapper flex">
-              <div className="text-xl m-3">
+              <div className="text-xl m-3 ml-10">
                 Course Title
               </div>
               <input type="text" className="courseName m-3 text-black" value={courseName} onChange={(e) => setCourseName(e.target.value)} />
             </div>
 
             <div className="course-codewrapper flex">
-              <div className="text-xl m-3">
+              <div className="text-xl m-3 ml-9">
                 Course Code
               </div>
               <input type="text" className="courseCode m-3" value={courseCode} onChange={(e) => setCourseCode(e.target.value)} />
+            </div>
+
+            <div className="course-codewrapper flex">
+              <div className="text-xl m-3">
+                Set Market Price
+              </div>
+              <input type="text" className="courseCode m-3" value={coursePrice} onChange={(e) => setCoursePrice(e.target.value)} />
             </div>
 
             <div className="image-upload-wrapper flex">
