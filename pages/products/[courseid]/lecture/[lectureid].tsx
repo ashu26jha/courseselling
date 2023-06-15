@@ -8,8 +8,31 @@ import Navbar from '../../../../components/Navbar';
 import LectureNames from "../../../../components/LectureNames";
 const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
 import lighthouse from '@lighthouse-web3/sdk';
+
+const query = `
+query MyQuery {
+    timeStampsIndex(first: 10) {
+      edges {
+        node {
+          timestamp
+          timestampFor {
+            id
+          }
+          timestampCreator {
+            id
+          }
+          coursedetails {
+            courseCode
+            id
+          }
+          id
+        }
+      }
+    }
+  }
+`
 // *********************************
-// REMOVE AND CONDITION OF PRICE   *  LINE 50 74
+// REMOVE AND CONDITION OF PRICE   *  LINE 50 74y
 //********************************** 
 
 export default function () {
@@ -22,10 +45,12 @@ export default function () {
     const clients = useCeramicContext()
     const { ceramic, composeClient } = clients
     const [courseDetails, setCourseDetails] = useState<any[]>([])
+    const [timeStampDetails, setTimeStampDetails] = useState<any[]>([])
     const [courseName, setCourseName] = useState('')
     const [lectureNames, setlectureNames] = useState(['']);
     const [cidToDecrypt, setcidToDecrypt] = useState('');
-
+    const [lock, setLock] = useState('')
+    const [progress,setProgress] = useState('');
 
     const handleLogin = async () => {
         await authenticateCeramic(ceramic, composeClient)
@@ -33,18 +58,14 @@ export default function () {
     }
 
     useEffect(()=>{
-        console.log(lectureNames)
-    },[lectureNames])
-
-    // useEffect(()=>{
-    //     if(cidToDecrypt!=''){
-    //         const help = async function(){
-    //             await decrypt();
-    //         }
-    //         help()
-    //     }
+        if(cidToDecrypt!=''){
+            const help = async function(){
+                await decrypt();
+            }
+            help()
+        }
         
-    // },[cidToDecrypt]);
+    },[cidToDecrypt]);
 
     useEffect(()=>{
         console.log(courseDetails)
@@ -114,7 +135,9 @@ export default function () {
             publicKey: address
         });
     }
-
+    useEffect(()=>{
+        console.log(progress)
+    },[progress])
     async function decrypt() {
         const { publicKey, signedMessage } = await encryptionSignature();
         const keyObject = await lighthouse.fetchEncryptionKey(
@@ -155,9 +178,82 @@ export default function () {
         }
     }
 
+    useEffect(()=>{
+        if(timeStampDetails.length!=0){
+            var helper = (composeClient.did._parentId)
+            var str = helper.replace('pkh:eip155:137','key')
+            const video = document.getElementById('vidplayer');
+            const length = parseInt(video.currentTime);
+            console.log(timeStampDetails.length);
+            for(var i = 0 ; i<timeStampDetails.length ; i++){
+                if(
+                    timeStampDetails[i].node.coursedetails.courseCode == courseid &&
+                    timeStampDetails[i].node.timestampFor.id == str &&
+                    i!=2
+                ){
+                    
+                    const courseDetailsID = timeStampDetails[i].node.coursedetails.id
+                    const StreamID = timeStampDetails[i].node.id;
+                    const currentTimeStamps = timeStampDetails[i].node.timestamp;
+                    var helpstr = '['
+                    for (var j = 0 ; currentTimeStamps!= undefined && j<currentTimeStamps.length; j++){
+                        helpstr = helpstr + (currentTimeStamps[j]).toString() + ',';                        
+                    }
+                    if(currentTimeStamps!=undefined && currentTimeStamps.length >=lectureid){
+                        console.log("SKIPPING")
+                        return;
+                    }
+                    helpstr = helpstr+length.toString() + ']';
+                    console.log(helpstr);
+                    const lastTry = async () => {
+                        console.log("TRTING")
+                        const response = await fetch ('/api/composeTime',{
+                            method: 'POST',
+                            body: JSON.stringify({courseDetailsID,StreamID,str,helpstr}),
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        });
+                        const data = await response.json()
+                        console.log(data);    
+                        setProgress('Completed!');
+                    }
+                    lastTry();
+                }
+
+            }
+        }
+    },[timeStampDetails])
+
+    useEffect(()=>{
+        const video = document.getElementById('vidplayer');
+        if(!Number.isNaN(video.duration)){
+            const hlp = async () => {
+                const TimeStampQuery = await composeClient.executeQuery(query);
+                setTimeStampDetails(TimeStampQuery.data.timeStampsIndex.edges);
+            }
+            hlp();
+            
+        }
+    },[lock])
+
     useEffect(() => {
+        const video = document.getElementById('vidplayer');
+        video?.addEventListener('timeupdate', function(){
+            if(parseInt(video.currentTime) >= parseInt(video.duration)*0.9  && (lock=='')) {
+                setLock('a');
+                console.log((video.currentTime))
+            }
+            // console.log(video.currentTime)
+            // console.log(video.duration)
+        })
         handleLogin();
     }, [])
+
+
+    async function addToCeramic(){
+
+    }
 
 
     return (
@@ -173,10 +269,11 @@ export default function () {
                     </div>
 
                     <div>
-                        <video id="vidplayer" width="800" height="800" controls className="m-10">
+                        <video id="vidplayer" src="./videos/1.mp4" width="800" height="800" controls className="m-10">
 
                         </video>
                     </div>
+                    <div>{progress}</div>
                 </div>
                 <div className="ml-auto w-fit mr-10 mt-6">
                     <div className="mt-2 mb-8 ml-2 text-2xl">
@@ -187,7 +284,6 @@ export default function () {
                     }
                 </div>
                
-
             </div>
         </div>
     )

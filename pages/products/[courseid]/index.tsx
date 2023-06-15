@@ -111,10 +111,11 @@ export default function () {
                 
                
                 <div>
-                    <div className="m-4">{bought?<>Watch, discuss, attend sessions!</>:<><div className="text-xl">You havent bought this course!<button className="ml-8 p-2" onClick={BuyCourse}>Get this course</button></div></>}</div><br/>
+                    <div className="m-4">{<><div className="text-xl">You havent bought this course!<button className="ml-8 p-2" onClick={BuyCourse}>Get this course</button></div></>}</div><br/>
                     Review<br/>
                     Huddle01 Live<br/>
                     Chat Push<br/>
+
                 </div>
                 <div className="ml-auto w-fit">
                     <div className="mt-2 mb-8 ml-2 text-2xl">

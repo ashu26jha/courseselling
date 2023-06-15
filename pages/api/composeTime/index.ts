@@ -17,7 +17,6 @@ const composeClient = new ComposeClient({
 
 export default function handler(req:any, res:any) {
     if(req.method=='POST'){
-        console.log(req.body)
         const authenticate = async () => {
             const seed = readFileSync("./admin_seed.txt");
             const key = fromString(seed, "base16");
@@ -28,17 +27,19 @@ export default function handler(req:any, res:any) {
             await did.authenticate();
             ceramic.did = did;
             composeClient.setDID(did);
+
             const profile = await composeClient.executeQuery(`
                 mutation MyMutation {
-                    createTimeStamps(
-                    input: {content: {CourseDetailsID: "${req.body.courseDetailsID}", timestampFor: "${req.body.DID}"}}
+                    updateTimeStamps(
+                    input: {id: "${req.body.StreamID}", content: {CourseDetailsID: "${req.body.courseDetailsID}", timestamp: `+req.body.helpstr+` timestampFor: "${req.body.str}"}, options: {replace: true}}
                     ) {
-                    document {
-                        id
-                    }
+                        document {
+                            id
+                        }
                     }
                 }
             `);
+            console.log(profile)
             
         };
 
