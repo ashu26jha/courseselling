@@ -8,11 +8,11 @@ export default function () {
     const changeColor=()=>{
         if(window.scrollY >= 90){
             setColor(false);
-            setimgURL("./images/Black_Logo.png")
+            setimgURL("/images/Black_Logo.png")
         }
         else{
             setColor(true);
-            setimgURL("./images/White_Logo.png")
+            setimgURL("/images/White_Logo.png")
         }
     }
 
