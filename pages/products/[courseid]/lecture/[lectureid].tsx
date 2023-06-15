@@ -188,8 +188,7 @@ export default function () {
             for(var i = 0 ; i<timeStampDetails.length ; i++){
                 if(
                     timeStampDetails[i].node.coursedetails.courseCode == courseid &&
-                    timeStampDetails[i].node.timestampFor.id == str &&
-                    i!=2
+                    timeStampDetails[i].node.timestampFor.id == str
                 ){
                     
                     const courseDetailsID = timeStampDetails[i].node.coursedetails.id
