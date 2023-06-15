@@ -4,6 +4,8 @@ import { authenticateCeramic } from '../../../utils'
 import CourseDetails from '../../../CourseDetail'
 import Navbar from '../../../components/Navbar'
 import LectureNames from "../../../components/LectureNames"
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
 import { useEffect, useState } from "react";
 import query from '../../../TimeStamp'
 
@@ -17,10 +19,13 @@ export default function () {
     const [courseDetails, setCourseDetails] = useState<any[]>([])
     const [lectureNames, setlectureNames] = useState(['']);
     const [cidToDecrypt, setcidToDecrypt] = useState('');
-    const [bought, setBought] = useState(false);
+    const [bought, setBought] = useState(false); // fix bought
     const [courseDetailsID, setcourseDetailID] = useState('');
     const [CourseBought, setCourseBought] = useState<any[]>([])
-    
+    const [rating, setRating] = useState(0);
+    const [hover, setHover] = useState(0);
+    const [reviewText, setreviewText] = useState('');
+
 
     async function BuyCourse(){
         // ***********************
@@ -42,7 +47,6 @@ export default function () {
 
 
     const handleLogin = async () => {
-        
         await authenticateCeramic(ceramic, composeClient)
         await GetCourseDetails()
     }
@@ -108,18 +112,44 @@ export default function () {
         <div className="">
             <Navbar/>
             <div className="flex banner">
-                
-               
-                <div>
-                    <div className="m-4">{<><div className="text-xl">You havent bought this course!<button className="ml-8 p-2" onClick={BuyCourse}>Get this course</button></div></>}</div><br/>
-                    Review<br/>
-                    Huddle01 Live<br/>
-                    Chat Push<br/>
+                    
+                <div className="ml-10 mt-10">
+                    <div className="mt-4">Review</div>
+                    <div className="mt-4">Huddle01 Live!</div>
+                    <div className="mt-4">Discuss on Push</div>
 
                 </div>
-                <div className="ml-auto w-fit">
-                    <div className="mt-2 mb-8 ml-2 text-2xl">
-                        Course content
+                {bought ? 
+                    <div className="ml-20 w-1/2">
+                        <div className="m-4 text-2xl">{bought?<>Watch, discuss and attend live sessions!</>:<><div className="text-xl">You havent bought this course!<button className="ml-8 p-2" onClick={BuyCourse}>Get this course</button></div></>}</div><br/>
+
+                        <div className="star-rating m-1">
+                            Drop a rating! 
+                            {[...Array(5)].map((star, index) => {
+                                index += 1;
+                                return (
+                                <button
+                                    type="button"
+                                    key={index}
+                                    className={index <= (hover || rating) ? "on" : "off"}
+                                    onClick={() => setRating(index)}
+                                    onMouseEnter={() => setHover(index)}
+                                    onMouseLeave={() => setHover(rating)}
+                                >
+                                    <span className="star">&#9733;</span>
+                                </button>
+                            )})}
+                        </div>
+                        <textarea className = "form"value = {reviewText} onChange={(e)=>{setreviewText(e.target.value)}}></textarea>
+                        <button className='product-button'>Submit Review</button>
+                    </div>
+                    :
+                    <></>
+                }
+                    
+                <div className="ml-auto w-fit mr-10">
+                    <div className="mt-4 mb-8 ml-2 text-2xl">
+                        Course contents
                     </div>
                     {
                         lectureNames.map((item,index)=>(<LectureNames courseID={CourseID} name={item} index={index} key={index}/>))

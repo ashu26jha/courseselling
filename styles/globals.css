@@ -102,7 +102,14 @@ input[type=text] {
     filter: blur(8px);
     -webkit-filter: blur(8px);
 }
-
+.form{
+    padding: 15px;
+    width: 100%;
+    height: 300px;
+    background-color: #1d1d1d;
+    margin-top: 30px; 
+    text-align: left;
+}
 .dropbox{
     margin: auto;
     height: 200px;
@@ -135,4 +142,20 @@ p{
 }
 .svghelp{
     transform: scale(1,-1);
+}
+
+  .off {
+    margin-left: 2px;
+    color: #ffffff;
+  }
+  .on {
+    margin-left: 2px;
+    color: #ffc800;
+  }
+.product-button{
+    border-block: initial;
+    width: 200px;
+}
+.product-button:hover{
+    border:none;
 }
