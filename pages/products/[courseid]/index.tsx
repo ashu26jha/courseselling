@@ -45,7 +45,6 @@ export default function () {
         console.log(data)
     }
 
-
     const handleLogin = async () => {
         await authenticateCeramic(ceramic, composeClient)
         await GetCourseDetails()
@@ -104,6 +103,25 @@ export default function () {
         }
     }
 
+    async function submitReview(){
+        const stars  = rating.toString();
+        console.log(stars); 
+        const runQuery = await composeClient.executeQuery(
+            `
+            mutation MyMutation {
+                createReviews(
+                  input: {content: {text: "${reviewText}", rating: `+stars+`, CourseDetailsID: "${courseDetailsID}"}}
+                ) {
+                  document {
+                    id
+                  }
+                }
+              }
+            `
+        )
+        console.log(runQuery);
+    }
+
     useEffect(() => {
         handleLogin();
     }, [])
@@ -141,7 +159,7 @@ export default function () {
                             )})}
                         </div>
                         <textarea className = "form"value = {reviewText} onChange={(e)=>{setreviewText(e.target.value)}}></textarea>
-                        <button className='product-button'>Submit Review</button>
+                        <button className='product-button' onClick={submitReview}>Submit Review</button>
                     </div>
                     :
                     <></>
