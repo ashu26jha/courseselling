@@ -36,15 +36,15 @@ export default function () {
         console.log(lectureNames)
     },[lectureNames])
 
-    useEffect(()=>{
-        if(cidToDecrypt!=''){
-            const help = async function(){
-                await decrypt();
-            }
-            help()
-        }
+    // useEffect(()=>{
+    //     if(cidToDecrypt!=''){
+    //         const help = async function(){
+    //             await decrypt();
+    //         }
+    //         help()
+    //     }
         
-    },[cidToDecrypt]);
+    // },[cidToDecrypt]);
 
     useEffect(()=>{
         console.log(courseDetails)
