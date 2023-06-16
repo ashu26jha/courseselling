@@ -6,6 +6,9 @@
     cursor: pointer;
     background-color: #1d1d1d;
 }
+body{
+    background-color: black;
+}
 .Cards:hover{
     opacity: 0.9;
     
@@ -13,6 +16,11 @@
 body{
     overflow-x: hidden;
 
+}
+.live{
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg); /* Firefox */
 }
 .card-text{
     
@@ -63,7 +71,7 @@ body {
 }
 button{
     margin-top: 20px;
-    color: rgb(222, 222, 222);
+    color: rgb(0, 0, 0);
     cursor: pointer;
     background: linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0)) padding-box, linear-gradient(to right, #ff94e1,  rgb(91, 50, 204),rgb(91, 50, 204), rgb(106, 50, 204),rgb(183, 202, 255)) border-box;
     border-radius: 5px;
@@ -158,4 +166,12 @@ p{
 }
 .product-button:hover{
     border:none;
+}
+.text-style{
+    background: radial-gradient(64.18% 64.18% at 71.16% 35.69%,#e7c6ff .89%,#c956ff 17.23%,#c979f8 42.04%,#ebc5ff 55.12%,#b63fff 71.54%,#9d00ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.liveroom{
+    background-color: black;
 }
