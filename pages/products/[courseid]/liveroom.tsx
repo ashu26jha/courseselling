@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import axios from 'axios';
+import { ethers } from 'ethers';
 import { useEventListener, useHuddle01 } from "@huddle01/react";
 import { Audio, Video } from "@huddle01/react/components";
-/* Uncomment to see the Xstate Inspector */
-// import { Inspect } from '@huddle01/react/components';
+import lighthouse from '@lighthouse-web3/sdk';
+const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
 
 import {
     useAudio,
@@ -56,8 +56,70 @@ const App = () => {
 
     const { peers } = usePeers();
 
+    const encryptionSignature = async () => {
+
+        const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        const messageRequested = (await lighthouse.getAuthMessage(address)).data.message;
+        const signedMessage = await signer.signMessage(messageRequested);
+        return ({
+            signedMessage: signedMessage,
+            publicKey: address
+        });
+    }
+
+    const applyAccessConditions = async (cid: string, NFTaddress:string) => {
+
+        const conditions = [
+            {
+                id: 1,
+                chain: "Mumbai",
+                method: "balanceOf",
+                standardContractType: "ERC1155",
+                contractAddress: "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E",
+                returnValueTest: { comparator: ">=", value: "1" },
+                parameters: [":userAddress"],
+            },
+        ];
+        console.log(cid);
+        const aggregator = "([1])";
+        const { publicKey, signedMessage } = await encryptionSignature();
+
+        const response = await lighthouse.applyAccessCondition(
+            publicKey,
+            cid,
+            signedMessage,
+            conditions,
+            aggregator
+        );
+
+        console.log("Access conditions applied ", response);
+
+    }
+
     useEventListener("room:joined", () => {
-        console.log("room:joined");
+        const uploadEncrypted = async()=>{
+            
+            const sign = await encryptionSignature();
+            
+            const response = await lighthouse.textUploadEncrypted(
+                roomId,
+                LIGHTHOUSE_API_KEY,
+                sign.publicKey,
+                sign.signedMessage
+            );
+
+            const lighthouseResponse = await response;
+            const textCID = lighthouseResponse.data.Hash;
+            console.log(textCID);
+
+            // Get NFT address from the contract!!! 
+            const NFTaddress ="0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E";
+            // Applying access condition
+            await applyAccessConditions(textCID, NFTaddress);
+        }
+        uploadEncrypted();
     });
 
     useEventListener("lobby:joined", () => {
@@ -106,7 +168,7 @@ const App = () => {
                     disabled={!joinLobby.isCallable}
                     onClick={JoinnNotify}
                 >
-                    Start & 🔔 via Push 
+                    Start session & 🔔 via Push 
                 </Button>
                 
             </div>
