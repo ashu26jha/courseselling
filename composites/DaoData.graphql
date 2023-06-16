@@ -1,0 +1,11 @@
+type BasicProfile @loadModel(id: "kjzl6hvfrbw6c5ajfmes842lu09vjxu5956e3xq0xk12gp2jcf9s90cagt2god9"){
+    id: ID!
+}
+
+type DaoData @createModel(accountRelation: LIST, description: "Data Proposal data"){
+    BasicProfileID: StreamID! @documentReference(model: "BasicProfile")
+    basicprofile: BasicProfile! @relationDocument(property: "BasicProfileID")
+    courseCode: String @string (maxLength: 200)
+    description: String @string (maxLength: 300)
+    did: DID @documentAccount
+}

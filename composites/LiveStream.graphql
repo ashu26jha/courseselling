@@ -2,10 +2,9 @@ type CourseDetails @loadModel(id: "$COURSE_DETAILS_ID"){
     id: ID!
 }
 
-type TimeStamps @createModel(accountRelation: LIST, description: " "){
+type LiveStream @createModel (accountRelation: LIST, description: "List of liveStream"){
     CourseDetailsID: StreamID! @documentReference(model: "CourseDetails")
     coursedetails: CourseDetails! @relationDocument(property: "CourseDetailsID")
-    timestampCreator: DID @documentAccount
-    timestampFor: DID @accountReference
-    timestamp: [Int] @list (maxLength: 200)
+    roomId: String! @string (maxLength: 200)
+    isLive: Int
 }

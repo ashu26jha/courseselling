@@ -1,4 +1,4 @@
-type CourseDetails @loadModel(id: "kjzl6hvfrbw6c9qkmmdjf65qfauuy7jpo334jrsgvwd1bru3x0b0rat15zzk8e6"){
+type CourseDetails @loadModel(id: "$COURSE_DETAILS_ID"){
     id: ID!
 }
 

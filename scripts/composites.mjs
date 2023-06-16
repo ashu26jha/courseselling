@@ -8,6 +8,9 @@ import {
   writeEncodedCompositeRuntime,
 } from "@composedb/devtools-node";
 
+import { Composite } from "@composedb/devtools";
+
+
 import { DID } from "dids";
 import { Ed25519Provider } from "key-did-provider-ed25519";
 import { getResolver } from "key-did-resolver";
@@ -28,41 +31,92 @@ export const writeComposite = async (spinner) => {
     ceramic,
     "./composites/CourseDetails.graphql"
   );
-  await writeEncodedComposite(CourseDetailsComposite,'./src/__generated__/CourseDetails.json');
 
   // Reviews Composite 
-  const ReviewsComposite = await createComposite(
+  const ReviewsSchema = readFileSync(
+    "./composites/Reviews.graphql",
+    {
+      encoding: "utf-8",
+    }
+  ).replace("$COURSE_DETAILS_ID", CourseDetailsComposite.modelIDs[0]);
+
+  const ReviewsComposite = await Composite.create({
     ceramic,
-    "./composites/Reviews.graphql"
-  );
-  await writeEncodedComposite(ReviewsComposite, './src/__generated__/Reviews.json');
+    schema: ReviewsSchema,
+  });
 
-  // CourseXReviews Composite
-  const CourseXReviewsComposite = await createComposite(
+  const CourseDetailxReviewsSchema = readFileSync(
+    "./composites/CourseXReviews.graphql",
+    {
+      encoding: "utf-8",
+    }
+  ).replace('$REVIEW_ID', ReviewsComposite.modelIDs[1]).replace('$COURSE_DETAILS_ID', CourseDetailsComposite.modelIDs[0]);
+
+
+  const CourseDetailxReviewsComposite = await Composite.create({
     ceramic,
-    "./composites/CourseXReviews.graphql"
-  );
-  await writeEncodedComposite(CourseXReviewsComposite, './src/__generated__/CourseXReviews.json');
+    schema: CourseDetailxReviewsSchema
+  });
 
-  //TimeStamps Composite
-  const TimeStampsComposite = await createComposite(
+  const LiveStreamSchema = readFileSync(
+    "./composites/LiveStream.graphql",
+    {
+      encoding: "utf-8",
+    }
+  ).replace("$COURSE_DETAILS_ID", CourseDetailsComposite.modelIDs[0]);
+
+  const LiveStreamComposite = await Composite.create({
     ceramic,
-    "./composites/TimeStamps.graphql"
+    schema: LiveStreamSchema
+  });
+
+  const BasicProfileComposite = await createComposite(
+    ceramic,
+    "./composites/BasicProfile.graphql"
   );
-  await writeEncodedComposite(TimeStampsComposite, './src/__generated__/TimeStamps.json')
 
-  await mergeEncodedComposites(ceramic,['./src/__generated__/CourseDetails.json','./src/__generated__/Reviews.json','./src/__generated__/CourseXReviews.json','./src/__generated__/TimeStamps.json'],'./src/__generated__/definition.json');
+  const DaoDataComposite = await createComposite(
+    ceramic,
+    "./composites/DaoData.graphql"
+  );
 
+  const TimeStampSchema = readFileSync(
+    "./composites/LiveStream.graphql",
+    {
+      encoding: "utf-8",
+    }
+  ).replace("$COURSE_DETAILS_ID", CourseDetailsComposite.modelIDs[0]);
+
+  const TimeStampComposite = await Composite.create({
+    ceramic,
+    schema: TimeStampSchema
+  });
+
+  const composite = Composite.from([
+    CourseDetailsComposite,
+    ReviewsComposite,
+    CourseDetailxReviewsComposite,
+    LiveStreamComposite,
+    BasicProfileComposite,
+    DaoDataComposite,
+    TimeStampComposite
+  ])
+
+  //Writing composites to local file
+  await writeEncodedComposite(composite, "./src/__generated__/definition.json");
+  spinner.info("creating composite for runtime usage");
   await writeEncodedCompositeRuntime(
     ceramic,
-    './src/__generated__/definition.json',
-    './src/__generated__/definition.js'
-  )
-  
+    "./src/__generated__/definition.json",
+    "./src/__generated__/definition.js"
+  );
+  spinner.info("deploying composite");
   const deployComposite = await readEncodedComposite(
     ceramic,
     "./src/__generated__/definition.json"
   );
+  const id = deployComposite.modelIDs;
+  spinner.info(`Deployed the following models: ${id}`);
 
   await deployComposite.startIndexingOn(ceramic);
   spinner.succeed("composite deployed & ready for use");
