@@ -11,6 +11,7 @@ import query from '../../../TimeStamp'
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import contractAddress from '../../../constants/Wis3Address.json'
 import abi from '../../../constants/Wis3.json'
+import Link from "next/link"
 
 export default function () {
 
@@ -194,9 +195,9 @@ export default function () {
             <div className="flex banner">
 
                 <div className="ml-10 mt-10">
-                    <div className="mt-4">Review</div>
-                    <div className="mt-4">Huddle01 Live!</div>
-                    {bought? <><div className="mt-4">Need a refund?</div></>:<></>}
+                    <div className="mt-4 active">Review</div>
+                    <div className="mt-4 inactive">Huddle01 Live!</div>
+                    {bought? <><div className="mt-4 inactive">Need a refund?</div></>:<></>}
                     
 
                 </div>

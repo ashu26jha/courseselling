@@ -19,17 +19,19 @@ const home = () => {
   return (
     <div>
       <Navbar/>
-
-      <b className="learn">LEARN </b>
-      <b className="teach">TEACH</b><br/>
-      <b className="earn">EARN </b><br/>
-      <div className="banner">
-        {/* <div style={containerStyles}>
-          <SlideShow slides={slides}/>
-        </div> */}
-        <div className="w-4/5 h-1/5 m-auto main"><b className="built">Check how its built </b></div>
+      <div className="MAINPAGE">
+        <b className="learn">LEARN </b>
+        <b className="teach">TEACH</b><br/>
+        <b className="earn">EARN </b><br/>
+   
+          {/* <div style={containerStyles}>
+            <SlideShow slides={slides}/>
+          </div> */}
+          <div className="w-4/5 h-1/5 m-auto main"><b className="built">Check how its built </b></div>
+        
       </div>
     </div>
+    
   )
 };
 

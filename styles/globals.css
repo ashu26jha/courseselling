@@ -6,13 +6,16 @@
     cursor: pointer;
     background-color: #1d1d1d;
 }
+body{
+    background-color: #000000;
+}
 .Cards:hover{
     opacity: 0.9;
     
 }
 body{
     overflow-x: hidden;
-    background-color: linear-gradient(to right, #141e30, #243b55);
+
 }
 .live{
     transform: rotateY(180deg);
@@ -23,7 +26,6 @@ body{
     
 }
 h1{
-    color: black;
 }
 .courseName{
     border-radius: 5px;
@@ -62,6 +64,10 @@ body {
     transition: all 0.3s ease;
     border-color: rgb(92, 16, 127);
 
+}
+.MAINPAGE{
+    background-image: linear-gradient(to bottom right, rgb(36, 0, 61), rgb(0, 0, 0));
+    height: 100vh;
 }
 .button-fix{
     margin-top: 40px;
@@ -215,11 +221,13 @@ p{
     background-clip: text;
 }
 .main{
+    background: linear-gradient( 270deg, rgb(11, 11, 11), rgb(27, 27, 27) );
     text-align: center;
     font-size: 40px;
     padding: 50px;
     border-radius: 10px;
-    margin-top: 100px;
+    margin-top: 150px;
+    width: 40%;
     
 }
 .built{
@@ -228,4 +236,10 @@ p{
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+}
+.active{
+    color: #dfb7ff;
+}
+.inactive{
+    color: #b7b7b7;
 }
