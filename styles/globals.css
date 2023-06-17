@@ -256,3 +256,32 @@ p{
     width: 120px;
     height: 120px;
 }
+.desc{
+    width: 20%;
+    height: 15%;
+}
+.courseCode{
+    margin: auto;
+}
+.proposals{
+    width: 300px;
+    height: 200px;
+    background-color: #171717;
+    margin: auto;
+    border-radius: 5px;
+}
+.proposalname{
+    margin-top: 20px;
+    margin-left: 15px;
+}
+.proposalcourse{
+    margin-top: 10px;
+    margin-left: 15px;
+}
+.proposaldes{
+    margin-top: 10px;
+    margin-left: 15px;
+}
+.fav{
+    border: none;
+}

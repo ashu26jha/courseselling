@@ -8,4 +8,5 @@ type DaoData @createModel(accountRelation: LIST, description: "Data Proposal dat
     courseCode: String @string (maxLength: 200)
     description: String @string (maxLength: 300)
     did: DID @documentAccount
+    address: String @string (maxLength: 300)
 }

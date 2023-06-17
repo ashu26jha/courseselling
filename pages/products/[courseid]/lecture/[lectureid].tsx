@@ -11,7 +11,7 @@ import lighthouse from '@lighthouse-web3/sdk';
 
 const query = `
 query MyQuery {
-    timeStampsIndex(first: 10) {
+    timeStampsIndex(first: 100) {
       edges {
         node {
           timestamp

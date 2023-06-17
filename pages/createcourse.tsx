@@ -7,10 +7,6 @@ import Navbar from "../components/Navbar"
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import contractAddress from '../constants/Wis3Address.json'
 import abi from '../constants/Wis3.json'
-/*********************************
- * 1. ADD CONTRACT INTEGRATION   *    
- * 2. ADD IMAGEURI TO COMPOSEDB  *               
- *********************************/
 
 const createCourse = () => {
   const { isWeb3Enabled, chainId, account } = useMoralis()
