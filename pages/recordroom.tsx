@@ -253,10 +253,13 @@ const recordRoom = () => {
             <div className="w-3/4" id="strip">
                 <Huddle01Graphics />
             </div>
-            <div {...getRootProps({})} className='p-16 mt-10 ml-40 mr-40 w-1/2 dropbox'>
-                <input {...getInputProps()} />
-                {fileURL ? (fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
+            <div className="w-full h-72">
+                <div {...getRootProps({})} className='dropbox'>
+                    <input {...getInputProps()} />
+                    {fileURL ? (fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
+                </div>
             </div>
+            
         </div>
     )
 };

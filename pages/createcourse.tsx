@@ -4,21 +4,22 @@ import { useCeramicContext } from '../context'
 import { authenticateCeramic } from '../utils'
 import lighthouse from '@lighthouse-web3/sdk'
 import Navbar from "../components/Navbar"
-
+import { useMoralis, useWeb3Contract } from "react-moralis";
+import contractAddress from '../constants/Wis3Address.json'
+import abi from '../constants/Wis3.json'
 /*********************************
  * 1. ADD CONTRACT INTEGRATION   *    
  * 2. ADD IMAGEURI TO COMPOSEDB  *               
  *********************************/
 
 const createCourse = () => {
-
+  const { isWeb3Enabled, chainId, account } = useMoralis()
   const [courseName, setCourseName] = useState("");
   const [courseCode, setCourseCode] = useState("");
   const [coursePrice, setCoursePrice] = useState("")
   const [ImageCID, setImageCID] = useState("");
   const [tokenURI, settokenURI] = useState("");
   const [fileURL, setFileURL] = useState("");
-
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
 
@@ -26,20 +27,35 @@ const createCourse = () => {
 
     if(ImageCID!=''){
       const helper = async function() {
-        await CreateCourse();
+        const ans = await CreateCourse();
       }
       helper();
     }
     
   },[ImageCID])
 
+  const { runContractFunction: createCourse } = useWeb3Contract({
+    abi: abi,
+    contractAddress: contractAddress.mumbai,
+    functionName: "createCourse",
+    msgValue: 100,
+    params:{
+      courseCode: courseCode,
+      courseName: courseName,
+      courseFee: coursePrice,
+      tokenURI: tokenURI
+    }
+  }) 
+
   useEffect (()=>{
     // ADD CONTRACT FUCNTIONS HERE
-    if(tokenURI!=''){
+    if(tokenURI!='' && coursePrice!=''){
       const helper = async function (){
-
+        console.log("RIN")
+        const hello = await createCourse();
+        console.log(hello)
       }
-      helper
+      helper();
     }
   },[tokenURI])
 
@@ -49,13 +65,22 @@ const createCourse = () => {
 
   const CreateCourse = async () => {
     if (ceramic.did !== undefined) {
+      var didkeyvalue: string = 'did:key:'+account;
       const update = await composeClient.executeQuery(`
-        mutation MyMutation {
-            createCourseDetails(input: {content: {price: ${parseInt(coursePrice)}, courseCode: "${courseCode}", courseName: "${courseName}"}}) {
+          mutation MyMutation {
+            createCourseDetails(
+              input: {
+                content: {
+                  price: ${coursePrice}, 
+                  courseCode: "${courseCode}", 
+                  courseName: "${courseName}", 
+                  courseCreator: "${didkeyvalue}"
+                  image: "${ImageCID}"
+                }
+              }
+            ) {
               document {
-                courseCode
-                courseName
-                price
+                id
               }
             }
           }
@@ -70,7 +95,6 @@ const createCourse = () => {
 
 
   async function handleSubmit() {
-    console.log(courseName, courseCode, coursePrice)
     await uploadFile();
   };
 
@@ -90,7 +114,10 @@ const createCourse = () => {
 
   return (
     <div>
-      <Navbar />
+      <div>
+        <Navbar />
+      </div>
+      
       <div className="banner" >
         <img className="GodHelpPLS" src="./images/Design.png" />
         <div className="createCourse">
@@ -107,14 +134,14 @@ const createCourse = () => {
               <div className="text-xl m-3 ml-9">
                 Course Code
               </div>
-              <input type="text" className="courseCode m-3" value={courseCode} onChange={(e) => setCourseCode(e.target.value)} />
+              <input type="text" className="courseCode m-3"  value={courseCode} onChange={(e) => setCourseCode(e.target.value)} />
             </div>
 
             <div className="course-codewrapper flex">
               <div className="text-xl m-3">
                 Set Market Price
               </div>
-              <input type="text" className="courseCode m-3" value={coursePrice} onChange={(e) => setCoursePrice(e.target.value)} />
+              <input type="text" className="courseCode m-3" placeholder='Price in gwei'value={coursePrice} onChange={(e) => setCoursePrice(e.target.value)} />
             </div>
 
             <div className="image-upload-wrapper flex">
@@ -128,9 +155,8 @@ const createCourse = () => {
             </div>
 
             <div className="button-wrapper flex">
-              <button onClick={handleSubmit} className="button-fix text-xl">Create Course</button>
+              <button onClick={handleSubmit} className="button-fix text-white text-xl">Create Course</button>
             </div>
-            {ImageCID}
           </div>
         </div>
 

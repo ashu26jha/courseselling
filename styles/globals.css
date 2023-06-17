@@ -76,6 +76,7 @@ button{
     background: linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0)) padding-box, linear-gradient(to right, #ff94e1,  rgb(91, 50, 204),rgb(91, 50, 204), rgb(106, 50, 204),rgb(183, 202, 255)) border-box;
     border-radius: 5px;
     border: 2px solid transparent;
+    border-block: inherit;
     
 }
 input{
@@ -103,10 +104,9 @@ input[type=text] {
     margin-bottom: 5px;
 }
 .GodHelpPLS{
-    /* opacity: 0.8; */
+    opacity: 0.8;
     margin: -4px;
     float: right;
-    height: 90vh;
     filter: blur(8px);
     -webkit-filter: blur(8px);
 }
@@ -119,12 +119,17 @@ input[type=text] {
     text-align: left;
 }
 .dropbox{
-    margin: auto;
+    width: 400px;
+    display: block;
+    position: relative;
+    text-align: center;
     height: 200px;
-    margin-top: 30px;
+    padding: 60px;
+    margin: auto;
     background: linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0)) padding-box, linear-gradient(to right, #ff94e1,  rgb(91, 50, 204),rgb(91, 50, 204), rgb(106, 50, 204),rgb(183, 202, 255)) border-box;
     border-radius: 5px;
     border: 2px solid transparent;
+    border-block: inherit;
 }
 .recordRoom{
     background-color: rgb(9, 9, 9);
@@ -174,4 +179,7 @@ p{
 }
 .liveroom{
     background-color: black;
+}
+.navcolor{
+    background-color: #131313;
 }

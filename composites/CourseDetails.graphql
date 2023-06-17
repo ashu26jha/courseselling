@@ -1,9 +1,10 @@
 type CourseDetails @createModel (accountRelation: LIST, description: "Course Details"){
-    courseCreator: DID! @documentAccount
+    streamAuthor: DID! @documentAccount
+    courseCreator: DID! 
     version: CommitID! @documentVersion
     courseName: String! @string(minLength: 3, maxLength: 50)
     courseCode: String! @string(minLength: 1, maxLength: 50)
-    price: Int!
+    price: Int
     lectureName: [String] @string(minLength: 3, maxLength: 200) @list(maxLength: 200)
     videoLecture: [String] @string(minLength: 3, maxLength: 200) @list(maxLength: 200)
     image: String @string(minLength: 3, maxLength: 200) 
