@@ -2,7 +2,7 @@ type CourseDetails @loadModel(id: "$COURSE_DETAILS_ID"){
     id: ID!
 }
 
-type LiveStream @createModel (accountRelation: LIST, description: "List of liveStream"){
+type LiveStream @createModel (accountRelation: LIST, description: "List of liveStreams"){
     CourseDetailsID: StreamID! @documentReference(model: "CourseDetails")
     coursedetails: CourseDetails! @relationDocument(property: "CourseDetailsID")
     roomId: String! @string (maxLength: 200)
