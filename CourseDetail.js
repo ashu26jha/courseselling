@@ -1,22 +1,20 @@
 const CourseDetail = 
 `
-    query CourseDetailsFetch {
-        courseDetailsIndex(first: 10) {
-            edges {
-                node {
-                    courseCode
-                    courseName
-                    version
-                    videoLecture
-                    courseCreator {
-                        id
-                    }
+query CourseDetailsFetch {
+    courseDetailsIndex(first: 100) {
+        edges {
+            node {
+                courseCode
+                courseName
+                videoLecture
+                courseCreator {
                     id
-                    lectureName
-                    price
                 }
+                lectureName
+                id
             }
         }
     }
+}
 `
 export default CourseDetail

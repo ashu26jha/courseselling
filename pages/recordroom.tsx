@@ -7,16 +7,48 @@ import { authenticateCeramic } from '../utils'
 import Huddle01Graphics from "../components/Huddle01Graphics";
 import lighthouse from '@lighthouse-web3/sdk';
 const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
+import { useMoralis, useWeb3Contract } from "react-moralis";
+import contractAddress from '../constants/Wis3Address.json'
+import abi from '../constants/Wis3.json';
+const query =
+    `query CourseDetailsFetch {
+    courseDetailsIndex(first: 100) {
+        edges {
+            node {
+                courseCode
+                courseName
+                videoLecture
+                courseCreator {
+                    id
+                }
+                lectureName
+                id
+            }
+        }
+    }
+}`
+
 const recordRoom = () => {
 
+    const { isWeb3Enabled, chainId, account, enableWeb3 } = useMoralis()
     const [lectureTitle, setLectureTitle] = useState("");
     const [lectureCID, setLectureCID] = useState("");
     const [lectures, setLectures] = useState([{}]);
     const [fileURL, setFileURL] = useState("");
     const [courseCreator, setCourseCreator] = useState("");
-
+    const [nftaddress, setNFTaddress] = useState('');
     const clients = useCeramicContext()
     const { ceramic, composeClient } = clients
+    const [courseCode, setCourseCode] = useState('');
+
+    const { runContractFunction: getNFTaddress } = useWeb3Contract({
+        abi: abi,
+        contractAddress: contractAddress.mumbai,
+        functionName: "getNFTaddress",
+        params: {
+            courseCode: courseCode
+        }
+    })
 
     const handleLogin = async () => {
         await authenticateCeramic(ceramic, composeClient)
@@ -24,33 +56,43 @@ const recordRoom = () => {
     }
 
     useEffect(() => {
+        if (courseCode != '') {
+            const helper = async () => {
+                console.log(courseCode)
+                await enableWeb3();
+                const res = await getNFTaddress();
+                console.log(res)
+                setNFTaddress(res!.toString())
+            }
+            helper();
+        }
+    }, [courseCode])
+
+    useEffect(() => {
         handleLogin()
     }, [])
 
-    const obectRef = {
-        "title": "",
-        "CID": ""
-    };
 
     async function addToList() {
+        await enableWeb3()
         if (fileURL === "") {
             alert("Add a file to drop box!!")
             return;
         }
+        if (ceramic.did !== undefined) {
+            const response = await composeClient.executeQuery(query);
+            var temp: any = response.data!.courseDetailsIndex;
+            var tempArr = temp.edges;
+            const didkey: string = 'did:key:' + account!.toString();
 
-        var lectureHASH = (await uploadFileEncrypted());
-        console.log("LECTURE HASH : ", lectureHASH);
+            for (var i = 0; i < tempArr.length; i++) {
+                if (tempArr[i].node.courseCreator.id == didkey) {
+                    setCourseCode(tempArr[i].node.courseCode)
+                }
+            }
+        }
 
-        var temp = lectures;
-        const obj = obectRef;
-        obj.title = lectureTitle;
-        obj.CID = lectureHASH.CID;
-        temp.push(obj)
 
-        console.log(lectures);
-        setLectures(temp);
-        setLectureTitle("")
-        setLectureCID("")
     }
 
 
@@ -89,7 +131,79 @@ const recordRoom = () => {
         });
     }
 
-    const applyAccessConditions = async (cid: string) => {
+    useEffect(() => {
+        if (nftaddress != '') {
+            const helper = async () => {
+                
+                const uploadResponse = (await uploadFileEncrypted()).CID;
+                await applyAccessConditions(uploadResponse, nftaddress);
+                
+                // ComposeDB
+
+                const response = await composeClient.executeQuery(query);
+                var temp: any = response.data!.courseDetailsIndex;
+                var tempArr = temp.edges;
+                for (var i = 0; i < tempArr.length; i++) {
+                    if (tempArr[i].node.courseCode == courseCode) {
+                        const reuse = tempArr[i].node;
+                        const streamid = reuse.id;
+                        const courseName = reuse.courseName;
+                        const LectureNames = reuse.lectureName;
+                        const LectureCID = reuse.videoLecture;
+                        const did:string = 'did:key:' + account?.toString()
+                        console.log(courseName)
+                        if (LectureCID == undefined) {
+                            console.log(courseName)
+                            const update = await composeClient.executeQuery(`
+                            mutation MyMutation {
+                                updateCourseDetails(
+                                  input: {id: "${streamid}", content: {courseCode: "${courseCode}", courseName: "${courseName}", courseCreator: "${did}", lectureName: "${[lectureTitle]}", videoLecture: "${uploadResponse}"}, options: {replace: true}}
+                                ) {
+                                  document {
+                                    courseCreator {
+                                      id
+                                      isViewer
+                                    }
+                                  }
+                                }
+                              }
+                                `);
+                            console.log(update);
+                            break;
+                        }
+                        else{
+                            var CIDarray = [...LectureCID,uploadResponse];
+                            var Namearray = [...LectureNames,lectureTitle];
+                            const update = await composeClient.executeQuery(`
+                                mutation MyMutation {
+                                    updateCourseDetails(
+                                    input: {content: {courseName: "${courseName}", courseCode: "${courseCode}",  videoLecture: "${[CIDarray]}", courseCreator: "${did}",lectureName: "${Namearray}" }, options: {replace: true}, id: "${streamid}"}
+                                    ) {
+                                        document {
+                                            id
+                                            price
+                                            courseName
+                                            courseCode
+                                            courseCreator{
+                                                id
+                                            }
+                                            videoLecture
+                                            lectureName
+                                            }
+                                        }
+                                    }
+                                `);
+                            console.log(update);
+                        }
+                    }
+                }
+            }
+            helper()
+
+        }
+    }, [nftaddress])
+
+    const applyAccessConditions = async (cid: string, nft: string) => {
 
         const conditions = [
             {
@@ -97,12 +211,11 @@ const recordRoom = () => {
                 chain: "Mumbai",
                 method: "balanceOf",
                 standardContractType: "ERC1155",
-                contractAddress: "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E",
+                contractAddress: nft,
                 returnValueTest: { comparator: ">=", value: "1" },
                 parameters: [":userAddress"],
             },
         ];
-        console.log(cid);
         const aggregator = "([1])";
         const { publicKey, signedMessage } = await encryptionSignature();
 
@@ -119,9 +232,9 @@ const recordRoom = () => {
     }
 
     const uploadFileEncrypted = async () => {
-        
+
         const sig = await encryptionSignature();
-        
+
         const response = await lighthouse.uploadEncrypted(
             fileURL,
             LIGHTHOUSE_API_KEY,
@@ -130,101 +243,26 @@ const recordRoom = () => {
         );
 
         console.log(response);
-        setLectureCID(response.data.Hash);
         var CID: string = response.data.Hash
         console.log(response.data.Hash);
         console.log("Lecture CID : ", lectureCID);
 
-        if (ceramic.did !== undefined) {
-            const response = await composeClient.executeQuery(`
-                query CourseDetailsFetch {
-                    courseDetailsIndex(first: 100) {
-                        edges {
-                            node {
-                                courseCode
-                                courseName
-                                videoLecture
-                                courseCreator {
-                                    id
-                                }
-                                lectureName
-                                price
-                                id
-                            }
-                        }
-                    }
-                }`
-            );
-            console.log(response)
-            try {
-                for (var i = 0; i < response.data!.courseDetailsIndex.edges.length; i++) {
-                    if (response.data!.courseDetailsIndex.edges[i].node.courseCreator.id == ceramic.did._parentId) {
-                        const streamID = response.data!.courseDetailsIndex.edges[i].node.id;
-                        const courseID = response.data!.courseDetailsIndex.edges[i].node.courseCode;
-                        const courseName = response.data!.courseDetailsIndex.edges[i].node.courseName;
-                        const price = response.data!.courseDetailsIndex.edges[i].node.price;
-                        const VideoCID = response.data!.courseDetailsIndex.edges[i].node.videoLecture;
-                        const Name = response.data!.courseDetailsIndex.edges[i].node.lectureName;
-                        if(VideoCID==undefined){
-                            const update = await composeClient.executeQuery(`
-                                mutation MyMutation {
-                                    updateCourseDetails(
-                                    input: {content: {price: ${parseInt(price)}, courseName: "${courseName}", courseCode: "${courseID}",  videoLecture: "${[CID]}", lectureName: "${lectureTitle}" }, options: {replace: true}, id: "${streamID}"}
-                                    ) {
-                                        document {
-                                            id
-                                            price
-                                            courseName
-                                            courseCode
-                                            videoLecture
-                                            lectureName
-                                            }
-                                        }
-                                    }
-                                `);
-                            console.log(update);
-                            break;
-                        }
-                        const CIDs = [...VideoCID,CID];
-                        var Lectures = [...Name,lectureTitle];
-                        
-                        const update = await composeClient.executeQuery(`
-                            mutation MyMutation {
-                                updateCourseDetails(
-                                input: {content: {price: ${parseInt(price)}, courseName: "${courseName}", courseCode: "${courseID}",  videoLecture: "${CIDs}", lectureName: "${Lectures}" }, options: {replace: true}, id: "${streamID}"}
-                                ) {
-                                document {
-                                    id
-                                    price
-                                    courseName
-                                    courseCode
-                                    videoLecture
-                                    lectureName
-                                }
-                                }
-                            }
-                        `);
-                        console.log(update);
-                        break;
-                    }
-
-                }
-            }
-            catch (e) {
-                if (e instanceof Error) {
-                    console.log(e.message);
-                }
-                console.log(e)
-            }
-
-        }
-
-        await applyAccessConditions(response.data.Hash)
-
         return ({
             CID
         })
+
     }
+
+    useEffect(() => {
+        async function help() {
+            if (!isWeb3Enabled) {
+                await enableWeb3();
+            }
+
+        }
+        help()
+    }, [])
+
 
     return (
         <div className="recordRoom">
@@ -259,7 +297,7 @@ const recordRoom = () => {
                     {fileURL ? (fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
                 </div>
             </div>
-            
+
         </div>
     )
 };
