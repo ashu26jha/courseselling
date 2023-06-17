@@ -81,7 +81,7 @@ export const writeComposite = async (spinner) => {
   );
 
   const TimeStampSchema = readFileSync(
-    "./composites/LiveStream.graphql",
+    "./composites/TimeStamps.graphql",
     {
       encoding: "utf-8",
     }

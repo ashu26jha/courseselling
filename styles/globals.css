@@ -6,16 +6,13 @@
     cursor: pointer;
     background-color: #1d1d1d;
 }
-body{
-    background-color: black;
-}
 .Cards:hover{
     opacity: 0.9;
     
 }
 body{
     overflow-x: hidden;
-
+    background-color: linear-gradient(to right, #141e30, #243b55);
 }
 .live{
     transform: rotateY(180deg);
@@ -71,13 +68,13 @@ body {
 }
 button{
     margin-top: 20px;
-    color: rgb(0, 0, 0);
+    color: rgb(204, 204, 204);
     cursor: pointer;
     background: linear-gradient(rgb(0, 0, 0), rgb(0, 0, 0)) padding-box, linear-gradient(to right, #ff94e1,  rgb(91, 50, 204),rgb(91, 50, 204), rgb(106, 50, 204),rgb(183, 202, 255)) border-box;
     border-radius: 5px;
     border: 2px solid transparent;
     border-block: inherit;
-    
+    height: 50px;
 }
 input{
     color: black;
@@ -182,4 +179,53 @@ p{
 }
 .navcolor{
     background-color: #131313;
+}
+.home{
+
+}
+.learn {
+    font-size: 72px;
+    line-height: 150px;
+    margin-left: 100px;
+    background: -webkit-linear-gradient( 270deg, rgb(191, 73, 255), rgb(72, 0, 217) );
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+.teach{
+    font-size: 72px;
+    margin-left: 750px;
+    line-height: 150px;
+    background: -webkit-linear-gradient( 270deg, rgb(191, 73, 255), rgb(72, 0, 217) );
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+.earn{
+    font-size: 72px;
+    margin-top: 300px;
+    margin-left: 620px;
+    line-height: 150px;
+    background: -webkit-linear-gradient( 270deg, rgb(191, 73, 255), rgb(72, 0, 217) );
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+.main{
+    text-align: center;
+    font-size: 40px;
+    padding: 50px;
+    border-radius: 10px;
+    margin-top: 100px;
+    
+}
+.built{
+    background: -webkit-linear-gradient( 270deg, rgb(97, 97, 97), rgb(156, 156, 156) );
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
 }

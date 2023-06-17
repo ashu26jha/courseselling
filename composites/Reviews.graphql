@@ -6,6 +6,7 @@ type Reviews @createModel(accountRelation: LIST, description: "Review for course
     CourseDetailsID: StreamID! @documentReference(model: "CourseDetails")
     coursedetails: CourseDetails! @relationDocument(property: "CourseDetailsID")
     author: DID! @documentAccount
+    write: String @string(maxLength:500)
     text: String! @string(maxLength: 500)
     rating: Int!
 }

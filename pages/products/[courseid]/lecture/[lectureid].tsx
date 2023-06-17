@@ -58,8 +58,10 @@ export default function () {
     }
 
     useEffect(()=>{
+        console.log(cidToDecrypt)
         if(cidToDecrypt!=''){
             const help = async function(){
+                
                 await decrypt();
             }
             help()
@@ -71,7 +73,7 @@ export default function () {
         console.log(courseDetails)
         if(courseDetails.length!=0){
             for(var i = 0 ; i < courseDetails.length ; i++){                                        // ***********************
-                if(courseDetails[i].node.courseCode == courseid && courseDetails[i].node.price>10){ // * REMOVE AND CONDITON *
+                if(courseDetails[i].node.courseCode == courseid){ // * REMOVE AND CONDITON *
                     setCourseName(courseDetails[i].node.courseName)                                 //************************
                     var lectureNameTemp = [];
                     const size = courseDetails[i].node.lectureName[0].length;
@@ -95,7 +97,7 @@ export default function () {
             
         }
         for(var i = 0 ; i < courseDetails.length ; i++){
-            if(courseDetails[i].node.courseCode == courseid && courseDetails[i].node.price>10){ /// REMOVE CONDITION
+            if(courseDetails[i].node.courseCode == courseid ){ /// REMOVE CONDITION
                 var lectureCID='';
                 var counter = 0 ;
                 const size = courseDetails[i].node.videoLecture[0].length;
@@ -138,6 +140,7 @@ export default function () {
     useEffect(()=>{
         console.log(progress)
     },[progress])
+
     async function decrypt() {
         const { publicKey, signedMessage } = await encryptionSignature();
         const keyObject = await lighthouse.fetchEncryptionKey(
@@ -243,17 +246,10 @@ export default function () {
                 setLock('a');
                 console.log((video.currentTime))
             }
-            // console.log(video.currentTime)
-            // console.log(video.duration)
+
         })
         handleLogin();
     }, [])
-
-
-    async function addToCeramic(){
-
-    }
-
 
     return (
         <div>
