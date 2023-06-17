@@ -24,15 +24,17 @@ const App = () => {
     const [lock, setlock] = useState(false);
     const [roomId, setRoomId] = useState("");
     const [projectId, setProjectId] = useState("GevCAkXtVgG_XGR_N2YeneVWZhtBH18H");
-    const [isAuthor, setIsAuthor] = useState(false);
-    const [isStudent, setIsStudent] = useState(true);
+    const [isAuthor, setIsAuthor] = useState(true);
+    const [isStudent, setIsStudent] = useState(false);
     const [cidToDecrypt, setCidToDecrypt] = useState('');
     const [roomIdStudent, setRoomIdStudent] = useState('');
+    const [isMeeting, setisMeeting] = useState(false);
 
     const { initialize } = useHuddle01();
     const { joinLobby } = useLobby();
 
     async function JoinnNotify() {
+        
         joinLobby(roomId)
     }
 
@@ -48,6 +50,7 @@ const App = () => {
         produceVideo,
         stopVideoStream,
         stopProducingVideo,
+        isProducing,
         stream: camStream,
     } = useVideo();
     const { joinRoom, leaveRoom } = useRoom();
@@ -57,6 +60,14 @@ const App = () => {
         if (camStream && videoRef.current) videoRef.current.srcObject = camStream;
     });
 
+    useEventListener("room:joined", () => {
+        // Write your logic here
+        console.log("room:joined")
+    })
+    function help(){
+        fetchVideoStream();
+        fetchAudioStream();
+    }
     const { peers } = usePeers();
 
     const encryptionSignature = async () => {
@@ -127,6 +138,8 @@ const App = () => {
 
     useEventListener("lobby:joined", () => {
         async function helper() {
+            console.log("Hello from lobby");
+
             fetchVideoStream();
             fetchAudioStream();
         }
@@ -136,6 +149,7 @@ const App = () => {
     useEffect(() => {
         if (camStream && camStream.active) {
             joinRoom();
+            setisMeeting(true);
         }
     }, [camStream])
 
@@ -209,7 +223,6 @@ const App = () => {
     return (
         <div className="grid grid-cols-2">
             <div>
-
                 <Button
                     disabled={!joinLobby.isCallable}
                     onClick={JoinnNotify}
@@ -240,7 +253,9 @@ const App = () => {
                             <Audio key={peer.peerId} peerId={peer.peerId} track={peer.mic} />
                         ))}
                 </div>
-
+                
+                {isMeeting? <> <><div className="flex"><div className="p-4 ml-40 mt-10 mic" ><img src="/images/MicCut.png"/></div><div className="p-4 ml-40 mt-10 cam"><img src="/images/CameraCut.png"/></div></div></><button className="ml-auto Leave"> Leave </button>  </>:<></>}
+                
             </div>
         </div>
     );

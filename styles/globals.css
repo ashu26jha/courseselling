@@ -21,6 +21,7 @@ body{
     transform: rotateY(180deg);
     -webkit-transform:rotateY(180deg); /* Safari and Chrome */
     -moz-transform:rotateY(180deg); /* Firefox */
+    margin-top: 50px;
 }
 .card-text{
     
@@ -242,4 +243,16 @@ p{
 }
 .inactive{
     color: #b7b7b7;
+}
+.Leave{
+    margin-left: 300px;
+    width: 100px;
+}
+.mic{
+    width: 80px;
+    height: 80px;
+}
+.cam{
+    width: 120px;
+    height: 120px;
 }
