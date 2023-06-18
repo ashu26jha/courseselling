@@ -19,7 +19,7 @@ export default function handler(req:any, res:any) {
     if(req.method=='POST'){
         const authenticate = async () => {
             const seed = readFileSync("./admin_seed.txt");
-            const key = fromString(seed, "base16");
+            const key = fromString(seed.toString(), "base16");
             const did = new DID({
                 resolver: getResolver(),
                 provider: new Ed25519Provider(key),
