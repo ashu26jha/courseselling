@@ -189,8 +189,8 @@ export default function () {
         if(timeStampDetails.length!=0){
             
             var str = 'did:key:' + account;
-            const video = document.getElementById('vidplayer');
-            const length = parseInt(video.currentTime);
+            const currentTime = (document.getElementById('vidplayer')as HTMLVideoElement).currentTime;
+            const length = currentTime;
             console.log(timeStampDetails.length);
             for(var i = 0 ; i<timeStampDetails.length ; i++){
                 console.log(timeStampDetails[i].node.coursedetails.courseCode)
@@ -236,8 +236,8 @@ export default function () {
     },[timeStampDetails])
 
     useEffect(()=>{
-        const video = document.getElementById('vidplayer');
-        if(!Number.isNaN(video!.duration)){
+        const video = (document.getElementById('vidplayer')as HTMLVideoElement).duration;
+        if(!Number.isNaN(video)){
             const hlp = async () => {
                 const TimeStampQuery = await composeClient.executeQuery(query);
                 var help: any = TimeStampQuery.data!.timeStampsIndex;
@@ -249,11 +249,12 @@ export default function () {
     },[lock])
 
     useEffect(() => {
+        const duration = (document.getElementById('vidplayer')as HTMLVideoElement).duration
+        const currentTime = (document.getElementById('vidplayer')as HTMLVideoElement).currentTime
         const video = document.getElementById('vidplayer');
         video?.addEventListener('timeupdate', function(){
-            if(parseInt(video.currentTime) >= parseInt(video.duration)*0.9  && (lock=='')) {
+            if((currentTime) >= duration*0.9  && (lock=='')) {
                 setLock('a');
-                console.log((video.currentTime))
             }
 
         })
@@ -268,9 +269,7 @@ export default function () {
                     <div className=" m-2 text-3xl">
                         {courseName}
                     </div>
-                    <div className=" m-4 text-xl">
-                        {lectureNames.length > 1 ? <>Topic: {  lectureNames[JSON.parse(lectureid)?.toNumber()]}</>:<></>}
-                    </div>
+                    
 
                     <div>
                         <video id="vidplayer" src="./videos/1.mp4" width="800" height="800" controls className="m-10">
