@@ -112,7 +112,8 @@ export default function () {
                         lectureCID+=courseDetails[i].node.videoLecture[0][j];
                     }
                     else {
-                        if(counter == parseInt(lectureid)) {
+                        var help: any = lectureid
+                        if(counter == parseInt(help)) {
                             setcidToDecrypt(lectureCID)
                             break;
                         }
@@ -179,7 +180,8 @@ export default function () {
     const GetCourseDetails = async () => {
         if (ceramic.did !== undefined) {
             var profile = await composeClient.executeQuery(CourseDetails);
-            setCourseDetails(profile.data!.courseDetailsIndex.edges)
+            var god: any = profile.data!.courseDetailsIndex
+            setCourseDetails(god.edges)
         }
     }
 
@@ -207,7 +209,7 @@ export default function () {
                     for (var j = 0 ; currentTimeStamps!= undefined && j<currentTimeStamps.length; j++){
                         helpstr = helpstr + (currentTimeStamps[j]).toString() + ',';                        
                     }
-                    if(currentTimeStamps!=undefined && currentTimeStamps.length >=lectureid){
+                    if(currentTimeStamps!=undefined && currentTimeStamps.length >= (lectureid ||0) ){
                         console.log("SKIPPING")
                         return;
                     }
@@ -235,10 +237,11 @@ export default function () {
 
     useEffect(()=>{
         const video = document.getElementById('vidplayer');
-        if(!Number.isNaN(video.duration)){
+        if(!Number.isNaN(video!.duration)){
             const hlp = async () => {
                 const TimeStampQuery = await composeClient.executeQuery(query);
-                setTimeStampDetails(TimeStampQuery.data.timeStampsIndex.edges);
+                var help: any = TimeStampQuery.data!.timeStampsIndex;
+                setTimeStampDetails(help.edges);
             }
             hlp();
             
@@ -266,7 +269,7 @@ export default function () {
                         {courseName}
                     </div>
                     <div className=" m-4 text-xl">
-                        {lectureNames.length > 1 ? <>Topic: {lectureNames[lectureid]}</>:<></>}
+                        {lectureNames.length > 1 ? <>Topic: {  lectureNames[JSON.parse(lectureid)?.toNumber()]}</>:<></>}
                     </div>
 
                     <div>
