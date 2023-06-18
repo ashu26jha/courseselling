@@ -58,6 +58,7 @@ export default function () {
         async function help() {
             await enableWeb3();
         }
+        help()
     }, [])
 
     async function trig() {
@@ -117,6 +118,7 @@ export default function () {
     useEffect(()=>{
         if(basicProfileID!=''){
             const helper = async () => {
+                console.log(address)
                 console.log(courseCode);
                 console.log(basicProfileID);
                 console.log(typeof(courseCode));
@@ -144,6 +146,7 @@ export default function () {
 
 
     useEffect(()=>{
+
         console.log(votingIndex,address)
         async function helping(){
             await enableWeb3();
@@ -154,12 +157,10 @@ export default function () {
     },[votingIndex])
 
     function favour (index: any){
-        setaddress(daoarray[index].node.address)
         setVotingIndex(1);
     }
 
     function against(index: any){
-        setaddress(daoarray[index].node.address)
         setVotingIndex(0);
     }
 
@@ -212,7 +213,8 @@ export default function () {
                                         <button className="ml-4 w-full fav" onClick={()=>favour(index)}
 
                                         >Favour</button>
-                                        <button className="mr-4 ml-1 w-full fav">Against</button>
+                                        <button className="mr-4 ml-1 w-full fav" onClick={()=>against(index)}>Against</button>
+
                                     </div>
                                 </div>
                             </>

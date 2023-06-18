@@ -50,7 +50,7 @@ const App = () => {
     const [lock, setlock] = useState(false);
     const [roomId, setRoomId] = useState("");
     const [projectId, setProjectId] = useState("GevCAkXtVgG_XGR_N2YeneVWZhtBH18H");
-    const [isAuthor, setIsAuthor] = useState(false);
+    const [isAuthor, setIsAuthor] = useState(true);
     const [isStudent, setIsStudent] = useState(false);
     const [cidToDecrypt, setCidToDecrypt] = useState('');
     const [roomIdStudent, setRoomIdStudent] = useState('');
@@ -64,6 +64,7 @@ const App = () => {
     const { joinLobby } = useLobby();
 
     async function JoinnNotify() {
+        console.log(roomId)
         joinLobby(roomId)
     }
 
@@ -99,7 +100,7 @@ const App = () => {
                     
                     
                     console.log(tempArr)
-                    const account1 = '0x74c7b157af4E5418F03eb928DF309cc98CE38E66';
+                    const account1 = account;
                     const did = 'did:key:'+account1?.toString();
                     console.log(did);
                     console.log(tempArr[i].node.courseCreator.id)
@@ -245,7 +246,6 @@ const App = () => {
 
     useEffect(() => {
         if (cidToDecrypt != '') {
-            console.log("LMAO");
             const decrypter = async () => {
                 const { publicKey, signedMessage } = await encryptionSignature();
                 const keyObject = await lighthouse.fetchEncryptionKey(
@@ -287,7 +287,7 @@ const App = () => {
                     disabled={!joinLobby.isCallable}
                     onClick={JoinnNotify}
                 >
-                    Start session & 🔔 via Push
+                    Start session 
                 </Button>
 
             </div>

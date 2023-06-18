@@ -27,7 +27,7 @@ export default function handler(req:any, res:any) {
             await did.authenticate();
             ceramic.did = did;
             composeClient.setDID(did);
-
+            console.log(req)
             const profile = await composeClient.executeQuery(`
                 mutation MyMutation {
                     updateTimeStamps(

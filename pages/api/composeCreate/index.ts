@@ -39,6 +39,8 @@ export default function handler(req:any, res:any) {
                     }
                 }
             `);
+
+            console.log(profile)
             
         };
 

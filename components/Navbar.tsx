@@ -27,7 +27,8 @@ export default function () {
             <a href="/"><img src={imgURL} className="h-16 pt-3 pl-2 transition-all" /></a>
             <a href="/products"><div className={color ? "text-slate-100 mt-5 ml-5 mr-5 text-2xl hover:text-violet-400 transition-all" : "text-slate-800 mt-5 ml-5 mr-5 text-2xl hover:text-violet-600 transition-all"}>Browse Courses</div> </a>
             <a href="/createcourse"><div className={color ? "text-slate-100 mt-5 ml-5 mr-5 text-2xl hover:text-violet-400 transition-all" : "text-slate-800 mt-5 ml-5 mr-5 text-2xl hover:text-violet-600 transition-all"}>Create Course</div></a>
-            <a href="/about"><div className={color ? "text-slate-100 mt-5 ml-5 mr-5 text-2xl hover:text-violet-400 transition-all" : "text-slate-800 mt-5 ml-5 mr-5 text-2xl hover:text-violet-600 transition-all"}>About</div></a>
+            <a href="/recordroom"><div className={color ? "text-slate-100 mt-5 ml-5 mr-5 text-2xl hover:text-violet-400 transition-all" : "text-slate-800 mt-5 ml-5 mr-5 text-2xl hover:text-violet-600 transition-all"}>Record Room</div></a> 
+            <a href="/refund"><div className={color ? "text-slate-100 mt-5 ml-5 mr-5 text-2xl hover:text-violet-400 transition-all" : "text-slate-800 mt-5 ml-5 mr-5 text-2xl hover:text-violet-600 transition-all"}>Governance</div></a>
             <div className="ml-auto mt-4">
                 <ConnectButton className="mt-2" moralisAuth={false}/>
             </div>

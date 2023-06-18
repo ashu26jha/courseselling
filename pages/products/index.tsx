@@ -39,7 +39,7 @@ export default function () {
                 {
                 courseDetails? 
                     courseDetails.map((item,index)=>(
-                        <Cards courseName={item.node.courseName} courseID={item.node.courseCode} imgURL="https://i.ibb.co/Lg7dJfN/Screenshot-2023-06-12-at-23-56-19.png" price={item.node.price} key={index}/>))
+                        <Cards courseName={item.node.courseName} courseID={item.node.courseCode} imgURL="https://gateway.lighthouse.storage/ipfs/QmRXvHYQAZnayFjsgDz9gzZWRGpEwXemp9VKPEhmrtrV7Z"  key={index}/>))
                 :<></>}
             </div>
         </div>

@@ -2,7 +2,7 @@ type CourseDetails @loadModel(id: "$COURSE_DETAILS_ID"){
     id: ID!
 }
 
-type TimeStamps @createModel(accountRelation: LIST, description: "Timestamps "){
+type TimeStamps @createModel(accountRelation: LIST, description: "Timestamps created"){
     CourseDetailsID: StreamID! @documentReference(model: "CourseDetails")
     coursedetails: CourseDetails! @relationDocument(property: "CourseDetailsID")
     timestampCreator: DID @documentAccount

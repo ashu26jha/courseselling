@@ -129,16 +129,19 @@ export default function () {
         }
         if (CourseBought.length != 0) {
             
-            var str = 'did:key:' + account?.toString;
+            var str = 'did:key:' + account?.toString();
 
             for (var i = 0; i < CourseBought.length; i++) {
+                console.log(CourseBought[i].node.timestampFor.id);
+                console.log(str)
                 if ((CourseBought[i].node.coursedetails.courseCode == CourseID) && (CourseBought[i].node.timestampFor.id == str)) {
+                    console.log(account)
                     setBought(true)
                 }
             }
         }
         else{
-            setBought(true);
+            setBought(false);
         }
         console.log(CourseBought)
 
@@ -178,7 +181,6 @@ export default function () {
     }
 
     async function test() {
-        console.log('wtf')
         setContractProvoke(true);
     }
 
@@ -187,6 +189,7 @@ export default function () {
         const a = async ()=>{
             await enableWeb3()
         }
+
     }, [])
 
     return (
@@ -225,6 +228,8 @@ export default function () {
                         </div>
                         <textarea className="form" value={reviewText} onChange={(e) => { setreviewText(e.target.value) }}></textarea>
                         <button className='product-button' onClick={submitReview}>Submit Review</button>
+
+                        
                     </div>
                     :
                     <button onClick={test}>Buy the course</button>

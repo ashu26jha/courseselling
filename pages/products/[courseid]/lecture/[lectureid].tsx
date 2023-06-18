@@ -8,6 +8,9 @@ import Navbar from '../../../../components/Navbar';
 import LectureNames from "../../../../components/LectureNames";
 const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
 import lighthouse from '@lighthouse-web3/sdk';
+import { useMoralis, useWeb3Contract } from "react-moralis";
+import contractAddress from '../../../../constants/Wis3Address.json'
+import abi from '../../../../constants/Wis3.json'
 
 const query = `
 query MyQuery {
@@ -31,9 +34,6 @@ query MyQuery {
     }
   }
 `
-// *********************************
-// REMOVE AND CONDITION OF PRICE   *  LINE 50 74y
-//********************************** 
 
 export default function () {
 
@@ -51,8 +51,10 @@ export default function () {
     const [cidToDecrypt, setcidToDecrypt] = useState('');
     const [lock, setLock] = useState('')
     const [progress,setProgress] = useState('');
+    const { isWeb3Enabled, chainId, account, enableWeb3 } = useMoralis()
 
     const handleLogin = async () => {
+        await enableWeb3()
         await authenticateCeramic(ceramic, composeClient)
         await GetCourseDetails()
     }
@@ -183,12 +185,16 @@ export default function () {
 
     useEffect(()=>{
         if(timeStampDetails.length!=0){
-            var helper = (composeClient.did._parentId)
-            var str = helper.replace('pkh:eip155:137','key')
+            
+            var str = 'did:key:' + account;
             const video = document.getElementById('vidplayer');
             const length = parseInt(video.currentTime);
             console.log(timeStampDetails.length);
             for(var i = 0 ; i<timeStampDetails.length ; i++){
+                console.log(timeStampDetails[i].node.coursedetails.courseCode)
+                console.log(courseid)
+                console.log(timeStampDetails[i].node.timestampFor.id)
+                console.log(str)
                 if(
                     timeStampDetails[i].node.coursedetails.courseCode == courseid &&
                     timeStampDetails[i].node.timestampFor.id == str
