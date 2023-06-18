@@ -23,7 +23,8 @@ export default function () {
     const GetCourseDetails = async () => {
         if (ceramic.did !== undefined) {
             var profile = await composeClient.executeQuery(CourseDetails);
-            setCourseDetails(profile.data!.courseDetailsIndex.edges)
+            var help: any = profile.data!.courseDetailsIndex;
+            setCourseDetails(help.edges)
         }
     }
 

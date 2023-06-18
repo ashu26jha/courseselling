@@ -294,7 +294,7 @@ const recordRoom = () => {
             <div className="w-full h-72">
                 <div {...getRootProps({})} className='dropbox'>
                     <input {...getInputProps()} />
-                    {fileURL ? (fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
+                    {fileURL ? JSON.parse(fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
                 </div>
             </div>
 

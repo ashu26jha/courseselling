@@ -43,6 +43,7 @@
     "did-session": "^1.0.0",
     "dids": "^3.2.0",
     "dotenv": "^16.1.4",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-tailwindcss": "^3.12.1",
     "ethers": "5.7.2",
     "graphql": "^16.6.0",
