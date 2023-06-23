@@ -18,7 +18,6 @@ const home = () => {
 
   return (
     <div>
-      <Navbar/>
       <div className="MAINPAGE">
         <b className="learn">LEARN </b>
         <b className="teach">TEACH</b><br/>
@@ -27,7 +26,7 @@ const home = () => {
           {/* <div style={containerStyles}>
             <SlideShow slides={slides}/>
           </div> */}
-          <div className="w-4/5 h-1/5 m-auto main"><b className="built">Check how its built </b></div>
+          <div className="w-4/5 h-1/5 m-auto main"><b className="built">Closed to save cluster cost 💵/fixes</b></div>
         
       </div>
     </div>
