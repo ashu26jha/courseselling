@@ -26,7 +26,7 @@ const home = () => {
           {/* <div style={containerStyles}>
             <SlideShow slides={slides}/>
           </div> */}
-          <div className="w-4/5 h-1/5 m-auto main"><b className="built">Closed to save cluster cost 💵/fixes</b></div>
+          <div className="w-4/5 h-1/5 m-auto main"><b className="built">Down for maintainence, back by tuesday</b></div>
         
       </div>
     </div>
