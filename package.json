@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "firstTime": "npx aws-sdk-js-codemod -t v2-to-v3 .",
-    "dev": "next dev",
+    "dev": "node scripts/run.mjs",
     "nextDev": "next dev",
     "ceramic": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' ceramic daemon --config ./composedb.config.json",
     "ceramic:local": "CERAMIC_ENABLE_EXPERIMENTAL_COMPOSE_DB='true' npx @ceramicnetwork/cli daemon",
@@ -17,7 +17,6 @@
     "graphql": "composedb graphql:server src/__generated__/definition.json"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.278.0",
     "@ceramicnetwork/blockchain-utils-linking": "2.11.0",
     "@ceramicnetwork/cli": "^2.22.0",
     "@ceramicnetwork/common": "2.20.0",
@@ -50,7 +49,6 @@
     "magic-sdk": "^17.4.0",
     "next": "^12.0.4",
     "nft.storage": "^7.1.0",
-    "openai": "^3.2.1",
     "ora": "^6.1.2",
     "react": "^18.0.0",
     "react-chartjs-2": "^5.2.0",
