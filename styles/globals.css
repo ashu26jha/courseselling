@@ -23,11 +23,8 @@ body{
     -moz-transform:rotateY(180deg); /* Firefox */
     margin-top: 50px;
 }
-.card-text{
-    
-}
-h1{
-}
+
+
 .courseName{
     border-radius: 5px;
 }
@@ -187,9 +184,6 @@ p{
 .navcolor{
     background-color: #131313;
 }
-.home{
-
-}
 .learn {
     font-size: 72px;
     line-height: 150px;
@@ -284,4 +278,9 @@ p{
 }
 .fav{
     border: none;
+}
+.peer-id{
+    text-align: center;
+    margin-top: 20px;
+    font-size: 30px;
 }
