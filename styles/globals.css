@@ -284,3 +284,13 @@ p{
     margin-top: 20px;
     font-size: 30px;
 }
+.vidStream{
+    margin: auto;
+    margin-top: 40px;
+    transform: rotateY(180deg);
+    -webkit-transform:rotateY(180deg); /* Safari and Chrome */
+    -moz-transform:rotateY(180deg); /* Firefox */
+}
+.start{
+    text-align: center;
+}
