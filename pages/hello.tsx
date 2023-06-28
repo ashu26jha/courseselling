@@ -42,6 +42,7 @@ export default function () {
   const { initialize, isInitialized } = useHuddle01();
   const [projectId, setProjectId] = useState("GevCAkXtVgG_XGR_N2YeneVWZhtBH18H");
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
+  const { joinRoom, leaveRoom, isRoomJoined} = useRoom();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [roomId, setRoomId] = useState('');
   const [session, setSession] = useState(false);
@@ -103,8 +104,6 @@ export default function () {
         if (roomId == '') {
           setRoomId(data.roomId)
           await joinLobby(data.roomId);
-          console.log("S")
-
         }
 
       }
@@ -139,6 +138,22 @@ export default function () {
     }
   }
 
+  async function leave (){
+    stopAudioStream();
+    stopVideoStream();
+    leaveRoom();
+    leaveLobby();
+  }
+
+
+  function Lobby (){
+    console.log(isLobbyJoined)
+  }
+
+  function Room (){
+    console.log(isRoomJoined);
+  }
+
 
   useEffect(() => {
     initialize(projectId);
@@ -153,10 +168,35 @@ export default function () {
     <>
       {user == 1 ? <><div className='peer-id'>Creator View</div></> : <></>}
       {user == 2 ? <><div className='peer-id'>Student View</div></> : <></>}
-      <div className ='start'>
-        {!session ? <><button className='p-2' onClick={() => { fetchAudioStream(), fetchVideoStream() }}>Start the session!</button></> : <></>}
+      <div className='start'>
+        {
+          !session ?
+            <>
+              <button className='p-2' onClick={() => { fetchAudioStream(), fetchVideoStream()}}>
+                Start the session!
+              </button>
+              
+            </>
+            :
+            <>
+              {
+                !isRoomJoined ? 
+                  <>
+                    <button onClick={joinRoom} className='m-2'> 
+                      Join Room 
+                    </button>
+                  </>
+                  : 
+                  <></>
+              }
+              <button className='m-2' onClick={leave}>
+                Close the session
+              </button>
+            </>
+        }
       </div>
-      
+        <button onClick={Room}>IS ROOM</button>
+        <button onClick={Lobby}>IS Lobby</button>
       <video
         ref={videoRef}
         autoPlay
