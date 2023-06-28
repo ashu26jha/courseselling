@@ -43,9 +43,12 @@ export default function () {
   const [projectId, setProjectId] = useState("GevCAkXtVgG_XGR_N2YeneVWZhtBH18H");
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
   const { joinRoom, leaveRoom, isRoomJoined} = useRoom();
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const [roomId, setRoomId] = useState('');
   const [session, setSession] = useState(false);
+  const [camera, setCam] = useState(false);
+  const [microphone, setMic] = useState(false);
 
   const {
     fetchVideoStream,
@@ -92,7 +95,6 @@ export default function () {
   useEffect(() => {
     if (user == 1) {
       const getRoom = async () => {
-        console.log("s")
         const response = await fetch('/api', {
           method: 'POST',
           body: JSON.stringify({}),
@@ -143,6 +145,7 @@ export default function () {
     stopVideoStream();
     leaveRoom();
     leaveLobby();
+    setSession(false)
   }
 
 
@@ -154,14 +157,26 @@ export default function () {
     console.log(isRoomJoined);
   }
 
-
   useEffect(() => {
     initialize(projectId);
     handleLogin()
   }, [])
 
-  function fetching() {
+  function toggleCamera() {
+    if(camera){
+      setCam(false);
+      stopVideoStream();
+    }
+    else{
+      setCam(true);
+      fetchVideoStream()
+    }
+    
+  }
 
+  function toggleMic (){
+    setMic(!microphone);
+    stopAudioStream();
   }
 
   return (
@@ -172,7 +187,7 @@ export default function () {
         {
           !session ?
             <>
-              <button className='p-2' onClick={() => { fetchAudioStream(), fetchVideoStream()}}>
+              <button className='p-2' onClick={() => { fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true)}}>
                 Start the session!
               </button>
               
@@ -203,6 +218,17 @@ export default function () {
         muted
         className='vidStream'
       />
-    </>
+        <div className='flex mt-4'>
+          <div className='ml-auto mt-1 mr-6 cursor-pointer' onClick={toggleMic}>
+            {session ? <>{!microphone ?  <><img width="20" height="20" src="https://i.ibb.co/0QgPkNX/Screenshot-2023-06-28-at-16-58-45.png" alt="microphone"/></> : <><img width="24" height="24" src="https://i.ibb.co/5TTbWrv/Screenshot-2023-06-28-at-16-58-50.png" alt="external-microphone-off-user-interface-thin-kawalan-studio"/></>}</> : <></>}
+          </div>
+          <div className='mr-auto mt-2 cursor-pointer' onClick={toggleCamera}>
+            {session ? <>{!camera ?  <><img width="24" height="24" src="https://i.ibb.co/PrXbYPy/Screenshot-2023-06-28-at-16-58-54.png" alt="microphone"/></> : <><img width="24" height="24" src="https://i.ibb.co/wLKTgTH/Screenshot-2023-06-28-at-16-58-58.png" alt="external-microphone-off-user-interface-thin-kawalan-studio"/></>}</> : <></>}
+          </div>
+          
+        </div>
+        
+
+    </> 
   )
 }
