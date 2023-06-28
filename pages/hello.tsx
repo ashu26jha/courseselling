@@ -3,6 +3,12 @@ import { useCeramicContext } from '../context'
 import { authenticateCeramic } from '../utils'
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import { useHuddle01, useEventListener } from '@huddle01/react';
+import { ethers } from 'ethers';
+import lighthouse from '@lighthouse-web3/sdk';
+const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
+import contractAddress from '../constants/Wis3Address.json'
+import abi from '../constants/Wis3.json'
+
 import {
   useLobby,
   useAudio,
@@ -42,13 +48,14 @@ export default function () {
   const { initialize, isInitialized } = useHuddle01();
   const [projectId, setProjectId] = useState("GevCAkXtVgG_XGR_N2YeneVWZhtBH18H");
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
-  const { joinRoom, leaveRoom, isRoomJoined} = useRoom();
+  const { joinRoom, leaveRoom, isRoomJoined } = useRoom();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [roomId, setRoomId] = useState('');
   const [session, setSession] = useState(false);
   const [camera, setCam] = useState(false);
   const [microphone, setMic] = useState(false);
+  const [help, setHelp] = useState(false);
 
   const {
     fetchVideoStream,
@@ -59,6 +66,7 @@ export default function () {
     isProducing: cam,
     error: camError,
   } = useVideo();
+
   const {
     fetchAudioStream,
     stopAudioStream,
@@ -69,6 +77,7 @@ export default function () {
     error: micError,
     isProducing
   } = useAudio();
+
 
   useEffect(() => {
     console.log("camera setting");
@@ -93,8 +102,12 @@ export default function () {
 
 
   useEffect(() => {
+
+
     if (user == 1) {
+
       const getRoom = async () => {
+
         const response = await fetch('/api', {
           method: 'POST',
           body: JSON.stringify({}),
@@ -106,6 +119,7 @@ export default function () {
         if (roomId == '') {
           setRoomId(data.roomId)
           await joinLobby(data.roomId);
+
         }
 
       }
@@ -140,7 +154,7 @@ export default function () {
     }
   }
 
-  async function leave (){
+  async function leave() {
     stopAudioStream();
     stopVideoStream();
     leaveRoom();
@@ -149,12 +163,13 @@ export default function () {
   }
 
 
-  function Lobby (){
+  function Lobby() {
     console.log(isLobbyJoined)
   }
 
-  function Room (){
+  function Room() {
     console.log(isRoomJoined);
+    console.log(isWeb3Enabled)
   }
 
   useEffect(() => {
@@ -163,18 +178,81 @@ export default function () {
   }, [])
 
   function toggleCamera() {
-    if(camera){
+    if (camera) {
       setCam(false);
       stopVideoStream();
     }
-    else{
+    else {
       setCam(true);
       fetchVideoStream()
     }
-    
+
   }
 
-  function toggleMic (){
+  const encryptionSignature = async () => {
+
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+    const signer = provider.getSigner();
+    const address = await signer.getAddress();
+    const messageRequested = (await lighthouse.getAuthMessage(address)).data.message;
+    const signedMessage = await signer.signMessage(messageRequested);
+    return ({
+      signedMessage: signedMessage,
+      publicKey: address
+    });
+  }
+
+  async function encryptRoom() {
+
+    const sign = await encryptionSignature();
+
+    const response = await lighthouse.textUploadEncrypted(
+      roomId,
+      LIGHTHOUSE_API_KEY,
+      sign.publicKey,
+      sign.signedMessage
+    );
+
+    const lighthouseResponse = await response;
+    const textCID = lighthouseResponse.data.Hash;
+    console.log(textCID);
+
+    const NFTaddress = "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E";
+    // Applying access condition
+    await applyAccessConditions(textCID, NFTaddress);
+
+  }
+
+  const applyAccessConditions = async (cid: string, NFTaddress: string) => {
+
+    const conditions = [
+      {
+        id: 1,
+        chain: "Mumbai",
+        method: "balanceOf",
+        standardContractType: "ERC1155",
+        contractAddress: NFTaddress,
+        returnValueTest: { comparator: ">=", value: "1" },
+        parameters: [":userAddress"],
+      },
+    ];
+    console.log(cid);
+    const aggregator = "([1])";
+    const { publicKey, signedMessage } = await encryptionSignature();
+
+    const response = await lighthouse.applyAccessCondition(
+      publicKey,
+      cid,
+      signedMessage,
+      conditions,
+      aggregator
+    );
+
+    console.log("Access conditions applied ", response);
+
+  }
+
+  function toggleMic() {
     setMic(!microphone);
     stopAudioStream();
   }
@@ -187,21 +265,21 @@ export default function () {
         {
           !session ?
             <>
-              <button className='p-2' onClick={() => { fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true)}}>
+              <button className='p-2' onClick={() => { fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true), encryptRoom() }}>
                 Start the session!
               </button>
-              
+
             </>
             :
             <>
               {
-                !isRoomJoined ? 
+                !isRoomJoined ?
                   <>
-                    <button onClick={joinRoom} className='m-2'> 
-                      Join Room 
+                    <button onClick={joinRoom} className='m-2'>
+                      Join Room
                     </button>
                   </>
-                  : 
+                  :
                   <></>
               }
               <button className='m-2' onClick={leave}>
@@ -210,25 +288,24 @@ export default function () {
             </>
         }
       </div>
-        <button onClick={Room}>IS ROOM</button>
-        <button onClick={Lobby}>IS Lobby</button>
+      <button onClick={Room}>IS ROOM</button>
+      <button onClick={Lobby}>IS Lobby</button>
       <video
         ref={videoRef}
         autoPlay
         muted
         className='vidStream'
       />
-        <div className='flex mt-4'>
-          <div className='ml-auto mt-1 mr-6 cursor-pointer' onClick={toggleMic}>
-            {session ? <>{!microphone ?  <><img width="20" height="20" src="https://i.ibb.co/0QgPkNX/Screenshot-2023-06-28-at-16-58-45.png" alt="microphone"/></> : <><img width="24" height="24" src="https://i.ibb.co/5TTbWrv/Screenshot-2023-06-28-at-16-58-50.png" alt="external-microphone-off-user-interface-thin-kawalan-studio"/></>}</> : <></>}
-          </div>
-          <div className='mr-auto mt-2 cursor-pointer' onClick={toggleCamera}>
-            {session ? <>{!camera ?  <><img width="24" height="24" src="https://i.ibb.co/PrXbYPy/Screenshot-2023-06-28-at-16-58-54.png" alt="microphone"/></> : <><img width="24" height="24" src="https://i.ibb.co/wLKTgTH/Screenshot-2023-06-28-at-16-58-58.png" alt="external-microphone-off-user-interface-thin-kawalan-studio"/></>}</> : <></>}
-          </div>
-          
+      <div className='flex mt-4'>
+        <div className='ml-auto mt-1 mr-6 cursor-pointer' onClick={toggleMic}>
+          {session ? <>{!microphone ? <><img width="20" height="20" src="https://i.ibb.co/0QgPkNX/Screenshot-2023-06-28-at-16-58-45.png" alt="microphone" /></> : <><img width="24" height="24" src="https://i.ibb.co/5TTbWrv/Screenshot-2023-06-28-at-16-58-50.png" alt="external-microphone-off-user-interface-thin-kawalan-studio" /></>}</> : <></>}
         </div>
-        
+        <div className='mr-auto mt-2 cursor-pointer' onClick={toggleCamera}>
+          {session ? <>{!camera ? <><img width="24" height="24" src="https://i.ibb.co/PrXbYPy/Screenshot-2023-06-28-at-16-58-54.png" alt="microphone" /></> : <><img width="24" height="24" src="https://i.ibb.co/wLKTgTH/Screenshot-2023-06-28-at-16-58-58.png" alt="external-microphone-off-user-interface-thin-kawalan-studio" /></>}</> : <></>}
+        </div>
 
-    </> 
+      </div>
+
+    </>
   )
 }

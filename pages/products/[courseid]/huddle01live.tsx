@@ -152,7 +152,7 @@ const App = () => {
                 chain: "Mumbai",
                 method: "balanceOf",
                 standardContractType: "ERC1155",
-                contractAddress: "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E",
+                contractAddress: NFTaddress,
                 returnValueTest: { comparator: ">=", value: "1" },
                 parameters: [":userAddress"],
             },
