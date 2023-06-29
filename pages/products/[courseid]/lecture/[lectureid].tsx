@@ -189,19 +189,15 @@ export default function () {
         if(timeStampDetails.length!=0){
             
             var str = 'did:key:' + account;
-            const currentTime = (document.getElementById('vidplayer')as HTMLVideoElement).currentTime;
-            const length = currentTime;
+            const currentTime:any = (document.getElementById('vidplayer')as HTMLVideoElement).currentTime;
+            const length = parseInt(currentTime);
             console.log(timeStampDetails.length);
             for(var i = 0 ; i<timeStampDetails.length ; i++){
-                console.log(timeStampDetails[i].node.coursedetails.courseCode)
-                console.log(courseid)
-                console.log(timeStampDetails[i].node.timestampFor.id)
-                console.log(str)
                 if(
                     timeStampDetails[i].node.coursedetails.courseCode == courseid &&
                     timeStampDetails[i].node.timestampFor.id == str
                 ){
-                    
+                    console.log(str)
                     const courseDetailsID = timeStampDetails[i].node.coursedetails.id
                     const StreamID = timeStampDetails[i].node.id;
                     const currentTimeStamps = timeStampDetails[i].node.timestamp;
@@ -211,7 +207,7 @@ export default function () {
                     }
                     if(currentTimeStamps!=undefined && currentTimeStamps.length >= (lectureid ||0) ){
                         console.log("SKIPPING")
-                        return;
+                        console.log(length)
                     }
                     helpstr = helpstr+length.toString() + ']';
                     console.log(helpstr);
@@ -236,8 +232,8 @@ export default function () {
     },[timeStampDetails])
 
     useEffect(()=>{
-        const video = (document.getElementById('vidplayer')as HTMLVideoElement).duration;
-        if(!Number.isNaN(video)){
+        const video:any = document.getElementById('vidplayer');
+        if(!Number.isNaN(video!.duration)){
             const hlp = async () => {
                 const TimeStampQuery = await composeClient.executeQuery(query);
                 var help: any = TimeStampQuery.data!.timeStampsIndex;
@@ -249,11 +245,10 @@ export default function () {
     },[lock])
 
     useEffect(() => {
-        const duration = (document.getElementById('vidplayer')as HTMLVideoElement).duration
-        const currentTime = (document.getElementById('vidplayer')as HTMLVideoElement).currentTime
-        const video = document.getElementById('vidplayer');
+        
+        const video:any = document.getElementById('vidplayer');
         video?.addEventListener('timeupdate', function(){
-            if((currentTime) >= duration*0.9  && (lock=='')) {
+            if(parseInt(video.currentTime) >= parseInt(video.duration)*0.9  && (lock=='')) {
                 setLock('a');
             }
 

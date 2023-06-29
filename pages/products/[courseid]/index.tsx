@@ -199,8 +199,8 @@ export default function () {
 
                 <div className="ml-10 mt-10">
                     <div className="mt-4 active">Review</div>
-                    <div className="mt-4 inactive">Huddle01 Live!</div>
-                    {bought? <><div className="mt-4 inactive">Need a refund?</div></>:<></>}
+                    <div className="mt-4 inactive"><Link href={`./${CourseID}/huddle01live`}>Huddle01 Live!</Link></div>
+                    {bought? <><div className="mt-4 inactive"><Link href="/refund">Need a refund?</Link></div></>:<></>}
                     
 
                 </div>

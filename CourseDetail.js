@@ -11,6 +11,7 @@ query CourseDetailsFetch {
                     id
                 }
                 lectureName
+                image
                 id
             }
         }

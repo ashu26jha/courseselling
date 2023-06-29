@@ -9,9 +9,9 @@ import { fromString } from "uint8arrays/from-string";
 import { definition } from "../../../src/__generated__/definition.js";
 import { RuntimeCompositeDefinition } from "@composedb/types";
 
-const ceramic = new CeramicClient("http://146.190.8.31:7007");
+const ceramic = new CeramicClient("http://24.199.76.25:7007");
 const composeClient = new ComposeClient({
-    ceramic: "http://146.190.8.31:7007",
+    ceramic: "http://24.199.76.25:7007",
     definition: definition as RuntimeCompositeDefinition,
 });
 

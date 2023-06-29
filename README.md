@@ -38,3 +38,5 @@ We also proposed a solution so that course authors can conduct token gated lives
 - Token gating recorded lectures
 - Encrypting the roomID, key being owner of the NFT
   
+localhost
+http://24.199.76.25:7007

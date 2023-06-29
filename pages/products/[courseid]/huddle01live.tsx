@@ -1,135 +1,271 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState, useRef } from 'react'
+import { useRouter } from "next/router"
+import { useCeramicContext } from '../../../context'
+import { authenticateCeramic } from '../../../utils'
+import { useMoralis, useWeb3Contract } from "react-moralis";
+import { useHuddle01, useEventListener } from '@huddle01/react';
 import { ethers } from 'ethers';
-import { useEventListener, useHuddle01 } from "@huddle01/react";
-import { Audio, Video } from "@huddle01/react/components";
 import lighthouse from '@lighthouse-web3/sdk';
 const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
-const demoCID = "QmdVGX18CWDszot2L27iwZ8HeFMMJzkLUhcQvpDhsrH1Hw";
-import { useMoralis, useWeb3Contract } from "react-moralis";
-import { useRouter } from "next/router";
-
-import { useCeramicContext } from '../../../context';
-import { authenticateCeramic } from '../../../utils';
-
-const query =
-    `query CourseDetailsFetch {
-    courseDetailsIndex(first: 100) {
-        edges {
-            node {
-                courseCode
-                courseName
-                videoLecture
-                courseCreator {
-                    id
-                }
-                lectureName
-                id
-            }
-        }
-    }
-}`
+import contractAddress from '../../../constants/Wis3Address.json'
+import abi from '../../../constants/Wis3.json'
 
 import {
-    useAudio,
     useLobby,
-    useMeetingMachine,
+    useAudio,
+    useVideo,
     usePeers,
     useRoom,
-    useVideo,
-    useRecording,
+    useLivestream,
 } from "@huddle01/react/hooks";
+import { Video, Audio } from "@huddle01/react/components";
 
-
-import Button from "../../../components/Button";
-
-const App = () => {
-    // refs
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const router = useRouter();
-    const {courseid} = router.query
-    const [lock, setlock] = useState(false);
-    const [roomId, setRoomId] = useState("");
-    const [projectId, setProjectId] = useState("GevCAkXtVgG_XGR_N2YeneVWZhtBH18H");
-    const [isAuthor, setIsAuthor] = useState(true);
-    const [isStudent, setIsStudent] = useState(false);
-    const [cidToDecrypt, setCidToDecrypt] = useState('');
-    const [roomIdStudent, setRoomIdStudent] = useState('');
-    const clients = useCeramicContext()
-    const { ceramic, composeClient } = clients
-    const [isMeeting, setisMeeting] = useState(false);
-    console.log(courseid)
-    const { isWeb3Enabled, chainId, account, enableWeb3 } = useMoralis() 
-
-    const { initialize } = useHuddle01();
-    const { joinLobby } = useLobby();
-
-    async function JoinnNotify() {
-        console.log(roomId)
-        joinLobby(roomId)
+const query = `
+  query MyQuery {
+    courseDetailsIndex(first: 10) {
+      edges {
+        node {
+          id
+          courseName
+          courseCode
+          courseCreator {
+            id
+          }
+        }
+      }
     }
+  }
+`;
 
-    const {
-        fetchAudioStream,
-        produceAudio,
-        stopAudioStream,
-        stopProducingAudio,
-        stream: micStream,
-    } = useAudio();
+export default function () {
+
+    const clients = useCeramicContext();
+    const { ceramic, composeClient } = clients;
+    const { isWeb3Enabled, chainId, account, enableWeb3 } = useMoralis()
+    const [user, setUser] = useState(0);
+    const { initialize, isInitialized } = useHuddle01();
+    const [projectId, setProjectId] = useState("GevCAkXtVgG_XGR_N2YeneVWZhtBH18H");
+    const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
+    const { joinRoom, leaveRoom, isRoomJoined } = useRoom();
+    const [courseDetailsID, setcourseDetailsID] = useState('');
+
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [roomId, setRoomId] = useState('');
+    const [session, setSession] = useState(false);
+    const [camera, setCam] = useState(false);
+    const [microphone, setMic] = useState(false);
+    const [help, setHelp] = useState(false);
+    const [roomIdDec, setroomIdDec] = useState('');
+    const [studentRoom, setstudentRoom] = useState('');
+    const [nftaddress, setnftaddress] = useState('');
+
+    const router = useRouter();
+    const courseCode = (router.query.courseid)
+
+    const { runContractFunction: getNFTaddress } = useWeb3Contract({
+        abi: abi,
+        contractAddress: contractAddress.mumbai,
+        functionName: "getNFTaddress",
+        params: {
+            courseCode: courseCode
+        }
+    })
+
     const {
         fetchVideoStream,
         produceVideo,
-        stopVideoStream,
         stopProducingVideo,
-        isProducing,
+        stopVideoStream,
         stream: camStream,
+        isProducing: cam,
+        error: camError,
     } = useVideo();
-    const { joinRoom, leaveRoom } = useRoom();
 
-    const handleLogin = async () => {
-        await authenticateCeramic(ceramic, composeClient);
-        console.log(courseid)
-        if(isAuthor==false && isStudent == false && courseid!=undefined){
-            
-            const response = await composeClient.executeQuery(query);
-            var temp: any = response.data!.courseDetailsIndex;
-            var tempArr = temp.edges;
-            for(var i = 0 ; i < tempArr.length ; i++){
-                console.log()
-                if(tempArr[i].node.courseCode==courseid){
-                    console.log(tempArr)
-                    
-                    
-                    console.log(tempArr)
-                    const account1 = account;
-                    const did = 'did:key:'+account1?.toString();
-                    console.log(did);
-                    console.log(tempArr[i].node.courseCreator.id)
-                    if(tempArr[i].node.courseCreator.id == did){
-                        setIsAuthor(true)
-                        console.log(isAuthor)
+    const {
+        fetchAudioStream,
+        stopAudioStream,
+        produceAudio,
+        stopProducingAudio,
+        stream: micStream,
+        isProducing: mic,
+        error: micError,
+        isProducing
+    } = useAudio();
+
+
+    useEffect(() => {
+        console.log("camera setting");
+        console.log(camStream);
+        console.log(videoRef)
+        if (camStream && videoRef.current) {
+            videoRef.current.srcObject = camStream;
+            produceVideo(camStream);
+            console.log(isProducing)
+            setSession(true);
+        }
+    }, [camStream, videoRef.current]);
+
+    useEffect(() => {
+        console.log("mic setting");
+        if (micStream) {
+            console.log(micStream)
+            produceAudio(micStream);
+            console.log(isProducing)
+        }
+    }, [micStream]);
+
+    useEffect(() => {
+        if (roomIdDec != '') {
+            const decrypt = async () => {
+                console.log(roomIdDec)
+                const { publicKey, signedMessage } = await encryptionSignature();
+                const keyObject = await lighthouse.fetchEncryptionKey(
+                    roomIdDec,
+                    publicKey,
+                    signedMessage
+                );
+                const fileType = "text/plain";
+                const decrypted = await lighthouse.decryptFile(roomIdDec, keyObject.data.key || "", fileType);
+                console.log(decrypted)
+
+                const reader = new FileReader();
+
+                // This fires after the blob has been read/loaded.
+                reader.addEventListener('loadend', (e) => {
+                    var temp: any = e.currentTarget;
+                    console.log(temp.result)
+                    setstudentRoom(temp.result);
+                });
+
+                // Start reading the blob as text.
+                reader.readAsText(decrypted);
+            }
+            decrypt()
+
+        }
+    }, [roomIdDec])
+
+
+    useEffect(() => {
+
+        if (user == 1) {
+
+            const getRoom = async () => {
+
+                const response = await fetch('/api', {
+                    method: 'POST',
+                    body: JSON.stringify({}),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const data = await response.json();
+                if (roomId == '') {
+                    setRoomId(data.roomId)
+                    await joinLobby(data.roomId);
+
+                }
+
+            }
+            getRoom();
+        }
+
+        if (user == 2) {
+            // Student
+            const help = `
+                query MyQuery {
+                    liveStreamIndex(first: 10) {
+                    edges {
+                        node {
+                        coursedetails {
+                            courseCode
+                        }
+                        isLive
+                        roomId
+                        }
+                    }
+                    }
+                }
+            `
+
+            const getRoom = async () => {
+                const response = await composeClient.executeQuery(help);
+                console.log(response)
+                const temp: any = response.data!.liveStreamIndex;
+                const arr = temp.edges;
+                console.log(courseCode)
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i].node.coursedetails.courseCode == courseCode) {
+                        setroomIdDec(arr[i].node.roomId)
                     }
                 }
             }
+            getRoom()
         }
+    }, [user])
+
+
+    const handleLogin = async () => {
+        await enableWeb3()
+        await authenticateCeramic(ceramic, composeClient)
+
+        // Checking wheather it is course creator or not
+
     }
 
     useEffect(() => {
+        if (courseCode != undefined) {
+            const helper = async () => {
+                await window.ethereum.enable();
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const account = accounts[0];
+
+                const response: any = (await composeClient.executeQuery(query)).data!.courseDetailsIndex;
+                for (var i = 0; i < response.edges.length; i++) {
+                    const temp = response.edges[i].node;
+
+                    if (temp.courseCode == courseCode) {
+                        const connectedDID = 'did:key:' + account.toString();
+                        setcourseDetailsID(temp.id);
+                        if ((temp.courseCreator.id).toLowerCase() == connectedDID) {
+                            console.log("Creator it is")
+                            setUser(1);
+                        }
+                        else {
+                            setUser(2);
+                        }
+                    }
+                }
+            }
+            helper()
+        }
+
+    }, [courseCode])
+
+    async function leave() {
+        stopAudioStream();
+        stopVideoStream();
+        leaveRoom();
+        leaveLobby();
+        setSession(false)
+    }
+
+    useEffect(() => {
+        initialize(projectId);
         handleLogin()
     }, [])
-    // Event Listner
-    useEventListener("lobby:cam-on", () => {
-        if (camStream && videoRef.current) videoRef.current.srcObject = camStream;
-    });
 
-    useEventListener("room:joined", () => {
-        // Write your logic here
-        console.log("room:joined")
-    })
-    function help() {
-        fetchVideoStream();
-        fetchAudioStream();
+    function toggleCamera() {
+        if (camera) {
+            setCam(false);
+            stopVideoStream();
+        }
+        else {
+            setCam(true);
+            fetchVideoStream()
+        }
+
     }
-    const { peers } = usePeers();
 
     const encryptionSignature = async () => {
 
@@ -144,15 +280,51 @@ const App = () => {
         });
     }
 
-    const applyAccessConditions = async (cid: string, NFTaddress: string) => {
+    async function encryptRoom() {
 
+        const sign = await encryptionSignature();
+        console.log(roomId);
+        const response = await lighthouse.textUploadEncrypted(
+            roomId,
+            LIGHTHOUSE_API_KEY,
+            sign.publicKey,
+            sign.signedMessage
+        );
+
+        const lighthouseResponse = await response;
+        const textCID = lighthouseResponse.data.Hash;
+        addToCeramic(textCID);
+
+        const NFTaddress = "0xB550E30110fc6CF4E3eDcA00c45045a77298E2D6";
+
+        await applyAccessConditions(textCID, NFTaddress);
+
+    }
+
+    async function addToCeramic(CID: string) {
+        const query = `
+      mutation MyMutation {
+        createLiveStream(input: {content: {roomId: "${CID}", CourseDetailsID: "${courseDetailsID}", isLive: 1}}) {
+          document {
+            id
+          }
+        }
+      }
+    `;
+
+        const response = await composeClient.executeQuery(query)
+        console.log(response)
+    }
+
+    const applyAccessConditions = async (cid: string, NFTaddress: string) => {
+        const res = await getNFTaddress();
         const conditions = [
             {
                 id: 1,
                 chain: "Mumbai",
                 method: "balanceOf",
-                standardContractType: "ERC1155",
-                contractAddress: "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E",
+                standardContractType: "ERC721",
+                contractAddress: res,
                 returnValueTest: { comparator: ">=", value: "1" },
                 parameters: [":userAddress"],
             },
@@ -173,153 +345,92 @@ const App = () => {
 
     }
 
-    useEventListener("room:joined", () => {
-        const uploadEncrypted = async () => {
-
-            const sign = await encryptionSignature();
-
-            const response = await lighthouse.textUploadEncrypted(
-                roomId,
-                LIGHTHOUSE_API_KEY,
-                sign.publicKey,
-                sign.signedMessage
-            );
-
-            const lighthouseResponse = await response;
-            const textCID = lighthouseResponse.data.Hash;
-            console.log(textCID);
-
-            // Get NFT address from the contract!!! 
-            const NFTaddress = "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E";
-            // Applying access condition
-            await applyAccessConditions(textCID, NFTaddress);
-        }
-        uploadEncrypted();
-    });
-
-    useEventListener("lobby:joined", () => {
-        async function helper() {
-            console.log("Hello from lobby");
-
-            fetchVideoStream();
-            fetchAudioStream();
-        }
-        helper();
-
-    });
-    useEffect(() => {
-        if (camStream && camStream.active) {
-            joinRoom();
-            setisMeeting(true);
-        }
-    }, [camStream])
-
-    useEffect(() => {
-        initialize(projectId);
-        console.log(lock)
-        async function getRoom() {
-            if (isAuthor == true) {
-                const response = await fetch('/api', {
-                    method: 'POST',
-                    body: JSON.stringify({}),
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const data = await response.json();
-                console.log(data)
-                if (roomId == '') {
-                    setRoomId(data.roomId)
-                }
-            }
-
-        }
-        getRoom();
-
-    }, [isAuthor]);
-
-    useEffect(() => {
-        if (roomIdStudent != '') {
-            // We have only fetch ID we do need to make it turn camera on
-        }
-    }, [roomIdStudent])
-
-    useEffect(() => {
-        if (cidToDecrypt != '') {
-            const decrypter = async () => {
-                const { publicKey, signedMessage } = await encryptionSignature();
-                const keyObject = await lighthouse.fetchEncryptionKey(
-                    cidToDecrypt,
-                    publicKey,
-                    signedMessage
-                );
-                const fileType = "text/plain";
-                const decrypted = await lighthouse.decryptFile(cidToDecrypt, keyObject.data.key || "", fileType);
-                console.log(decrypted)
-                const reader = new FileReader();
-
-                // This fires after the blob has been read/loaded.
-                reader.addEventListener('loadend', (e) => {
-                    var temp: any = e.currentTarget;
-                    setRoomIdStudent(temp.result)
-                });
-
-                // Start reading the blob as text.
-                reader.readAsText(decrypted);
-            }
-            decrypter();
-
-        }
-    }, [cidToDecrypt])
-
-    useEffect(() => {
-        if (isStudent == true) {
-            // Get to see from composeDB if live session is active or not
-            // Get CID from composeDB
-            setCidToDecrypt(demoCID)
-        }
-    }, [isStudent])
+    function toggleMic() {
+        setMic(!microphone);
+        stopAudioStream();
+    }
 
     return (
-        <div className="grid grid-cols-2">
-            <div>
-                <Button
-                    disabled={!joinLobby.isCallable}
-                    onClick={JoinnNotify}
-                >
-                    Start session 
-                </Button>
+        <>
+            {user == 1 ? <><div className='peer-id'>Creator View</div></> : <></>}
+            {user == 2 ? <><div className='peer-id'>Student View</div></> : <></>}
+            <div className='start'>
+                {
+                    !session && (user == 1) ?
+                        <>
+                            <button className='p-2' onClick={() => { fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true), encryptRoom() }}>
+                                Start the session!
+                            </button>
 
+                        </>
+                        :
+                        <>
+                            {
+                                !isRoomJoined && (user == 1) ?
+                                    <>
+                                        <button onClick={joinRoom} className='m-2'>
+                                            Join Room
+                                        </button>
+                                        <button className='m-2' onClick={leave}>
+                                            Close the session
+                                        </button>
+                                    </>
+                                    :
+                                    <></>
+                            }
+                            {
+                                user == 2 && studentRoom != '' ?
+                                    <>
+                                        {
+                                            !isRoomJoined ?
+                                                <>
+                                                    {
+                                                        isLobbyJoined && !camera ?
+                                                            <>
+                                                                <button onClick={() => { fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true) }}>
+                                                                    Start Cam & Mic
+                                                                </button>
+                                                            </>
+                                                            :
+                                                            <>
+                                                                { }
+                                                                <button onClick={() => { joinLobby(studentRoom) }}>
+                                                                    Join Lobby
+                                                                </button>
+                                                            </>
+                                                    }
+                                                </>
+                                                :
+                                                <>
+                                                </>
+                                        }
+                                        {camera && !isRoomJoined ? <><button onClick={joinRoom}>Join Room</button></> : <></>}
+                                        <div className=''>{studentRoom}</div>
+                                    </>
+                                    :
+                                    <>
+                                    </>
+                            }
+
+                        </>
+                }
             </div>
-            <div>
-                <video ref={videoRef} autoPlay muted className="live"></video>
-                <div className="grid grid-cols-4">
-                    {Object.values(peers)
-                        .filter((peer) => peer.cam)
-                        .map((peer) => (
-                            <>
-                                role: {peer.role}
-                                <Video
-                                    key={peer.peerId}
-                                    peerId={peer.peerId}
-                                    track={peer.cam}
-                                    debug
-                                />
-                            </>
-                        ))}
-                    {Object.values(peers)
-                        .filter((peer) => peer.mic)
-                        .map((peer) => (
-                            <Audio key={peer.peerId} peerId={peer.peerId} track={peer.mic} />
-                        ))}
+
+            <video
+                ref={videoRef}
+                autoPlay
+                muted
+                className='vidStream'
+            />
+            <div className='flex mt-4'>
+                <div className='ml-auto mt-1 mr-6 cursor-pointer' onClick={toggleMic}>
+                    {session ? <>{!microphone ? <><img width="20" height="20" src="https://i.ibb.co/0QgPkNX/Screenshot-2023-06-28-at-16-58-45.png" alt="microphone" /></> : <><img width="24" height="24" src="https://i.ibb.co/5TTbWrv/Screenshot-2023-06-28-at-16-58-50.png" alt="external-microphone-off-user-interface-thin-kawalan-studio" /></>}</> : <></>}
+                </div>
+                <div className='mr-auto mt-2 cursor-pointer' onClick={toggleCamera}>
+                    {session ? <>{!camera ? <><img width="24" height="24" src="https://i.ibb.co/PrXbYPy/Screenshot-2023-06-28-at-16-58-54.png" alt="microphone" /></> : <><img width="24" height="24" src="https://i.ibb.co/wLKTgTH/Screenshot-2023-06-28-at-16-58-58.png" alt="external-microphone-off-user-interface-thin-kawalan-studio" /></>}</> : <></>}
                 </div>
 
-                {isMeeting ? <> <><div className="flex"><div className="p-4 ml-40 mt-10 mic" ><img src="/images/MicCut.png" /></div><div className="p-4 ml-40 mt-10 cam"><img src="/images/CameraCut.png" /></div></div></><button className="ml-auto Leave"> Leave </button>  </> : <></>}
-
             </div>
-        </div>
-    );
-};
-
-export default App;
-
+        </>
+    )
+}

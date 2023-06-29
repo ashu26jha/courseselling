@@ -3,11 +3,6 @@ import Navbar from "../components/Navbar"
 import SlideShow from "../components/SlideShow";
 
 const home = () => {
-  const slides = [
-    {"url": "./images/Buy_Course.png", "title": "Buy Courses", "length":11},
-    {"url": "./images/Create_Course.png", "title": "Create & Sell courses","length":22},
-    {"url": "./images/Verifiable_Credentials.png", "title": "Get Verfiable credentials on course completion", "length":50}
-  ];
 
   const containerStyles = {
     width: "700px",
@@ -18,6 +13,7 @@ const home = () => {
 
   return (
     <div>
+      <Navbar/>
       <div className="MAINPAGE">
         <b className="learn">LEARN </b>
         <b className="teach">TEACH</b><br/>
@@ -26,7 +22,7 @@ const home = () => {
           {/* <div style={containerStyles}>
             <SlideShow slides={slides}/>
           </div> */}
-          <div className="w-4/5 h-1/5 m-auto main"><b className="built">Down for maintainence, back by tuesday</b></div>
+          <div className="w-4/5 h-1/5 m-auto main"><b className="built">Scroll to see, how its built</b></div>
         
       </div>
     </div>
