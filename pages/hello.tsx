@@ -39,6 +39,7 @@ const query = `
   }
 `;
 
+
 export default function () {
 
   const clients = useCeramicContext();
@@ -49,6 +50,7 @@ export default function () {
   const [projectId, setProjectId] = useState("GevCAkXtVgG_XGR_N2YeneVWZhtBH18H");
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
   const { joinRoom, leaveRoom, isRoomJoined } = useRoom();
+  const [courseDetailsID, setcourseDetailsID] = useState('');
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [roomId, setRoomId] = useState('');
@@ -142,7 +144,8 @@ export default function () {
       const temp = response.edges[i].node;
 
       if (temp.courseCode == courseCode) {
-        const connectedDID = 'did:key:' + account.toString()
+        const connectedDID = 'did:key:' + account.toString();
+        setcourseDetailsID(temp.id);
         if ((temp.courseCreator.id).toLowerCase() == connectedDID) {
           console.log("Creator it is")
           setUser(1);
@@ -215,12 +218,27 @@ export default function () {
 
     const lighthouseResponse = await response;
     const textCID = lighthouseResponse.data.Hash;
-    console.log(textCID);
+    // addToCeramic(textCID);
 
     const NFTaddress = "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E";
-    // Applying access condition
+
     await applyAccessConditions(textCID, NFTaddress);
 
+  }
+
+  async function addToCeramic(CID: string){
+    const query = `
+      mutation MyMutation {
+        createLiveStream(input: {content: {roomId: "${CID}", CourseDetailsID: "${courseDetailsID}", isLive: 1}}) {
+          document {
+            id
+          }
+        }
+      }
+    `;
+
+    const response = await composeClient.executeQuery(query)
+    console.log(response)
   }
 
   const applyAccessConditions = async (cid: string, NFTaddress: string) => {
