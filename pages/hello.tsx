@@ -58,6 +58,8 @@ export default function () {
   const [camera, setCam] = useState(false);
   const [microphone, setMic] = useState(false);
   const [help, setHelp] = useState(false);
+  const [roomIdDec, setroomIdDec] = useState('');
+  const [studentRoom, setstudentRoom] = useState('');
 
   const {
     fetchVideoStream,
@@ -102,9 +104,39 @@ export default function () {
     }
   }, [micStream]);
 
+  useEffect(() => {
+    if (roomIdDec != '') {
+      const decrypt = async () => {
+        console.log(roomIdDec)
+        const { publicKey, signedMessage } = await encryptionSignature();
+        const keyObject = await lighthouse.fetchEncryptionKey(
+          roomIdDec,
+          publicKey,
+          signedMessage
+        );
+        const fileType = "text/plain";
+        const decrypted = await lighthouse.decryptFile(roomIdDec, keyObject.data.key || "", fileType);
+        console.log(decrypted)
+
+        const reader = new FileReader();
+
+        // This fires after the blob has been read/loaded.
+        reader.addEventListener('loadend', (e) => {
+          var temp: any = e.currentTarget;
+          console.log(temp.result)
+          setstudentRoom(temp.result);
+        });
+
+        // Start reading the blob as text.
+        reader.readAsText(decrypted);
+      }
+      decrypt()
+
+    }
+  }, [roomIdDec])
+
 
   useEffect(() => {
-
 
     if (user == 1) {
 
@@ -126,6 +158,37 @@ export default function () {
 
       }
       getRoom();
+    }
+
+    if (user == 2) {
+      // Student
+      const help = `
+      query MyQuery {
+        liveStreamIndex(first: 10) {
+          edges {
+            node {
+              coursedetails {
+                courseCode
+              }
+              isLive
+              roomId
+            }
+          }
+        }
+      }
+      `
+      const getRoom = async () => {
+        const response = await composeClient.executeQuery(help);
+        console.log(response)
+        const temp: any = response.data!.liveStreamIndex;
+        const arr = temp.edges;
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i].node.coursedetails.courseCode == courseCode) {
+            setroomIdDec(arr[i].node.roomId)
+          }
+        }
+      }
+      getRoom()
     }
   }, [user])
 
@@ -151,7 +214,7 @@ export default function () {
           setUser(1);
         }
         else {
-          setUser(2);
+        setUser(2);
         }
       }
     }
@@ -163,16 +226,6 @@ export default function () {
     leaveRoom();
     leaveLobby();
     setSession(false)
-  }
-
-
-  function Lobby() {
-    console.log(isLobbyJoined)
-  }
-
-  function Room() {
-    console.log(isRoomJoined);
-    console.log(isWeb3Enabled)
   }
 
   useEffect(() => {
@@ -208,7 +261,7 @@ export default function () {
   async function encryptRoom() {
 
     const sign = await encryptionSignature();
-
+    console.log(roomId);
     const response = await lighthouse.textUploadEncrypted(
       roomId,
       LIGHTHOUSE_API_KEY,
@@ -218,15 +271,15 @@ export default function () {
 
     const lighthouseResponse = await response;
     const textCID = lighthouseResponse.data.Hash;
-    // addToCeramic(textCID);
+    addToCeramic(textCID);
 
-    const NFTaddress = "0xB6BFAD5cDAC0306825DbeC64cb5398601670f00E";
+    const NFTaddress = "0xB550E30110fc6CF4E3eDcA00c45045a77298E2D6";
 
     await applyAccessConditions(textCID, NFTaddress);
 
   }
 
-  async function addToCeramic(CID: string){
+  async function addToCeramic(CID: string) {
     const query = `
       mutation MyMutation {
         createLiveStream(input: {content: {roomId: "${CID}", CourseDetailsID: "${courseDetailsID}", isLive: 1}}) {
@@ -242,15 +295,15 @@ export default function () {
   }
 
   const applyAccessConditions = async (cid: string, NFTaddress: string) => {
-
+    console.log(NFTaddress)
     const conditions = [
       {
         id: 1,
         chain: "Mumbai",
         method: "balanceOf",
-        standardContractType: "ERC1155",
-        contractAddress: NFTaddress,
-        returnValueTest: { comparator: ">=", value: "1" },
+        standardContractType: "ERC721",
+        contractAddress: "0xB550E30110fc6CF4E3eDcA00c45045a77298E2D6",
+        returnValueTest: { comparator: ">=", value: "0" },
         parameters: [":userAddress"],
       },
     ];
@@ -281,7 +334,7 @@ export default function () {
       {user == 2 ? <><div className='peer-id'>Student View</div></> : <></>}
       <div className='start'>
         {
-          !session ?
+          !session && (user == 1) ?
             <>
               <button className='p-2' onClick={() => { fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true), encryptRoom() }}>
                 Start the session!
@@ -291,23 +344,34 @@ export default function () {
             :
             <>
               {
-                !isRoomJoined ?
+                !isRoomJoined && (user == 1) ?
                   <>
                     <button onClick={joinRoom} className='m-2'>
                       Join Room
+                    </button>
+                    <button className='m-2' onClick={leave}>
+                      Close the session
                     </button>
                   </>
                   :
                   <></>
               }
-              <button className='m-2' onClick={leave}>
-                Close the session
-              </button>
+              {
+                user == 2 && studentRoom!='' ? 
+                  <>
+                  {!isRoomJoined ? <> {isLobbyJoined && !camera? <><button onClick={() => {fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true)}}>Start Cam & Mic</button></> : <>{}<button onClick={ () => {joinLobby(studentRoom)} }>Join Lobby</button></> } </> : <></>}
+                  {camera && !isRoomJoined ? <><button onClick={joinRoom}>Join Room</button></> : <></>}
+                    <div className=''>{studentRoom}</div>
+                  </> 
+                  : 
+                  <>
+                  </>
+              }
+
             </>
         }
       </div>
-      <button onClick={Room}>IS ROOM</button>
-      <button onClick={Lobby}>IS Lobby</button>
+
       <video
         ref={videoRef}
         autoPlay
@@ -323,7 +387,6 @@ export default function () {
         </div>
 
       </div>
-
     </>
   )
 }
