@@ -4,6 +4,7 @@ import contractAddress from '../constants/Wis3Address.json'
 import abi from '../constants/Wis3.json'
 import { useCeramicContext } from '../context'
 import { authenticateCeramic } from '../utils'
+import Head from 'next/head'
 import Navbar from "@/components/Navbar";
 export default function () {
 
@@ -168,6 +169,9 @@ export default function () {
 
     return (
         <>
+            <Head>
+                <title>Wis3 | Refunds</title>
+            </Head>
             <Navbar />
             <div>
                 <div className="w-56 m-auto mt-8">

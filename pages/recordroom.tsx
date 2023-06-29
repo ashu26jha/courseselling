@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { HuddleIframe, iframeApi, useEventListner } from "@huddle01/iframe";
 import { useDropzone } from 'react-dropzone';
+import Head from 'next/head'
 import { ethers } from 'ethers';
 import { useCeramicContext } from '../context'
 import { authenticateCeramic } from '../utils'
@@ -268,6 +269,9 @@ const recordRoom = () => {
 
     return (
         <div className="recordRoom">
+            <Head>
+                <title>Wis3 | Record Room</title>
+            </Head>
             <div className="flex ">
                 <HuddleIframe roomUrl="https://iframe.huddle01.com/" className="w-3/4 h-full aspect-video bg-black huddle" />
                 <div>

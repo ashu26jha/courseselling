@@ -1,6 +1,6 @@
 import {useState} from "react";
 import Navbar from "../components/Navbar"
-import SlideShow from "../components/SlideShow";
+import Head from 'next/head'
 
 const home = () => {
 
@@ -13,6 +13,9 @@ const home = () => {
 
   return (
     <div>
+      <Head>
+        <title>Wis3</title>
+      </Head>
       <Navbar/>
       <div className="MAINPAGE">
         <b className="learn">LEARN </b>

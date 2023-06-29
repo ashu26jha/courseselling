@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar"
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import contractAddress from '../constants/Wis3Address.json'
 import abi from '../constants/Wis3.json'
+import Head from 'next/head'
 
 const createCourse = () => {
   const { account } = useMoralis()
@@ -111,6 +112,9 @@ const createCourse = () => {
 
   return (
     <div>
+      <Head>
+        <title>Wis3 | Create Course</title>
+      </Head>
       <div>
         <Navbar />
       </div>

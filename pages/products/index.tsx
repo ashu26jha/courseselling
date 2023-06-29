@@ -4,6 +4,7 @@ import { authenticateCeramic } from '../../utils'
 import CourseDetails from '../../CourseDetail'
 import Navbar from '../../components/Navbar'
 import { useEffect, useState } from "react";
+import Head from 'next/head'
 
 
 export default function () {
@@ -34,6 +35,9 @@ export default function () {
     
     return (
         <div className="banner">
+            <Head>
+                <title>Wis3 | Products</title>
+            </Head>
             <Navbar/>
             <div className="m-auto w-30 text-3xl text-center mt-10 ">Get some courses!</div>
             <div className="flex flex-wrap">
