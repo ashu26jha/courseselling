@@ -2,7 +2,7 @@ type CourseDetails @loadModel(id: "$COURSE_DETAILS_ID"){
     id: ID!
 }
 
-type Reviews @createModel(accountRelation: LIST, description: "Review for the course"){
+type Reviews @createModel(accountRelation: LIST, description: "Reviews for the course Details"){
     CourseDetailsID: StreamID! @documentReference(model: "CourseDetails")
     coursedetails: CourseDetails! @relationDocument(property: "CourseDetailsID")
     author: DID! @documentAccount
