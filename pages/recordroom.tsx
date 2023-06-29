@@ -40,6 +40,7 @@ const recordRoom = () => {
     const clients = useCeramicContext()
     const { ceramic, composeClient } = clients
     const [courseCode, setCourseCode] = useState('');
+    const [fileName, setFileName] = useState('');
 
     const { runContractFunction: getNFTaddress } = useWeb3Contract({
         abi: abi,
@@ -113,6 +114,7 @@ const recordRoom = () => {
 
     const onDrop = useCallback((acceptedFiles: any) => {
         setFileURL(acceptedFiles);
+        setFileName(acceptedFiles[0].name)
         console.log(acceptedFiles)
     }, [])
 
@@ -210,7 +212,7 @@ const recordRoom = () => {
                 id: 1,
                 chain: "Mumbai",
                 method: "balanceOf",
-                standardContractType: "ERC1155",
+                standardContractType: "ERC721",
                 contractAddress: nft,
                 returnValueTest: { comparator: ">=", value: "1" },
                 parameters: [":userAddress"],
@@ -294,7 +296,7 @@ const recordRoom = () => {
             <div className="w-full h-72">
                 <div {...getRootProps({})} className='dropbox'>
                     <input {...getInputProps()} />
-                    {fileURL ? JSON.parse(fileURL[0]).name : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
+                    {fileURL ? fileName : isDragActive ? <p>Drop the file here ...</p> : <p>Drag 'n' drop file here, or click to select file</p>}
                 </div>
             </div>
 

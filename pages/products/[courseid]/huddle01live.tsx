@@ -57,10 +57,19 @@ export default function () {
     const [help, setHelp] = useState(false);
     const [roomIdDec, setroomIdDec] = useState('');
     const [studentRoom, setstudentRoom] = useState('');
+    const [nftaddress, setnftaddress] = useState('');
 
     const router = useRouter();
     const courseCode = (router.query.courseid)
 
+    const { runContractFunction: getNFTaddress } = useWeb3Contract({
+        abi: abi,
+        contractAddress: contractAddress.mumbai,
+        functionName: "getNFTaddress",
+        params: {
+            courseCode: courseCode
+        }
+    })
 
     const {
         fetchVideoStream,
@@ -164,20 +173,21 @@ export default function () {
         if (user == 2) {
             // Student
             const help = `
-      query MyQuery {
-        liveStreamIndex(first: 10) {
-          edges {
-            node {
-              coursedetails {
-                courseCode
-              }
-              isLive
-              roomId
-            }
-          }
-        }
-      }
-      `
+                query MyQuery {
+                    liveStreamIndex(first: 10) {
+                    edges {
+                        node {
+                        coursedetails {
+                            courseCode
+                        }
+                        isLive
+                        roomId
+                        }
+                    }
+                    }
+                }
+            `
+
             const getRoom = async () => {
                 const response = await composeClient.executeQuery(help);
                 console.log(response)
@@ -307,15 +317,15 @@ export default function () {
     }
 
     const applyAccessConditions = async (cid: string, NFTaddress: string) => {
-        console.log(NFTaddress)
+        const res = await getNFTaddress();
         const conditions = [
             {
                 id: 1,
                 chain: "Mumbai",
                 method: "balanceOf",
                 standardContractType: "ERC721",
-                contractAddress: "0xB550E30110fc6CF4E3eDcA00c45045a77298E2D6",
-                returnValueTest: { comparator: ">=", value: "0" },
+                contractAddress: res,
+                returnValueTest: { comparator: ">=", value: "1" },
                 parameters: [":userAddress"],
             },
         ];
@@ -371,7 +381,29 @@ export default function () {
                             {
                                 user == 2 && studentRoom != '' ?
                                     <>
-                                        {!isRoomJoined ? <> {isLobbyJoined && !camera ? <><button onClick={() => { fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true) }}>Start Cam & Mic</button></> : <>{ }<button onClick={() => { joinLobby(studentRoom) }}>Join Lobby</button></>} </> : <></>}
+                                        {
+                                            !isRoomJoined ?
+                                                <>
+                                                    {
+                                                        isLobbyJoined && !camera ?
+                                                            <>
+                                                                <button onClick={() => { fetchAudioStream(), fetchVideoStream(), setMic(true), setCam(true) }}>
+                                                                    Start Cam & Mic
+                                                                </button>
+                                                            </>
+                                                            :
+                                                            <>
+                                                                { }
+                                                                <button onClick={() => { joinLobby(studentRoom) }}>
+                                                                    Join Lobby
+                                                                </button>
+                                                            </>
+                                                    }
+                                                </>
+                                                :
+                                                <>
+                                                </>
+                                        }
                                         {camera && !isRoomJoined ? <><button onClick={joinRoom}>Join Room</button></> : <></>}
                                         <div className=''>{studentRoom}</div>
                                     </>

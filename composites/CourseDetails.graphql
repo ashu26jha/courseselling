@@ -1,4 +1,4 @@
-type CourseDetails @createModel (accountRelation: LIST, description: "Course Details of course"){
+type CourseDetails @createModel (accountRelation: LIST, description: "Course Details of course lm"){
     streamAuthor: DID! @documentAccount
     courseCreator: DID! 
     courseName: String! @string(minLength: 3, maxLength: 50)

@@ -196,7 +196,29 @@ export default function () {
 
                 {
                     daoarray.length!=0 ? 
-                    <> We had to remove this sorry vercel didn't allowed Apologies
+                    <>
+                        {daoarray.map((item:any,index)=>(
+                            <>
+                                <div className="proposals">
+                                    <div className="proposalname mt-4">
+                                        Name: {item.node.basicprofile.displayName}
+                                    </div>
+                                    <div className="proposalcourse">
+                                        Course Code: {item.node.courseCode}
+                                    </div>
+                                    <div className="proposaldes">
+                                        Description: {item.node.description}
+                                    </div >
+                                    <div className="voting flex m-auto">
+                                        <button className="ml-4 w-full fav" onClick={()=>favour(index)}
+
+                                        >Favour</button>
+                                        <button className="mr-4 ml-1 w-full fav" onClick={()=>against(index)}>Against</button>
+
+                                    </div>
+                                </div>
+                            </>
+                        ))}
                         
                     </>
                     

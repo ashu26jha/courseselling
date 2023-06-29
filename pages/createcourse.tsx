@@ -9,7 +9,7 @@ import contractAddress from '../constants/Wis3Address.json'
 import abi from '../constants/Wis3.json'
 
 const createCourse = () => {
-  const { isWeb3Enabled, chainId, account } = useMoralis()
+  const { account } = useMoralis()
   const [courseName, setCourseName] = useState("");
   const [courseCode, setCourseCode] = useState("");
   const [coursePrice, setCoursePrice] = useState("")
@@ -18,6 +18,7 @@ const createCourse = () => {
   const [fileURL, setFileURL] = useState("");
   const clients = useCeramicContext()
   const { ceramic, composeClient } = clients
+  const [fileName, setFileName] = useState('');
 
   useEffect(()=>{
 
@@ -39,7 +40,6 @@ const createCourse = () => {
       courseCode: courseCode,
       courseName: courseName,
       courseFee: coursePrice,
-      tokenURI: tokenURI
     }
   }) 
 
@@ -47,7 +47,6 @@ const createCourse = () => {
     // ADD CONTRACT FUCNTIONS HERE
     if(tokenURI!='' && coursePrice!=''){
       const helper = async function (){
-        console.log("RIN")
         const hello = await createCourse();
         console.log(hello)
       }
@@ -62,6 +61,7 @@ const createCourse = () => {
   const CreateCourse = async () => {
     if (ceramic.did !== undefined) {
       var didkeyvalue: string = 'did:key:'+account;
+      console.log("Before Ceramic ",coursePrice, courseCode, courseName,didkeyvalue,ImageCID);
       const update = await composeClient.executeQuery(`
           mutation MyMutation {
             createCourseDetails(
@@ -104,6 +104,7 @@ const createCourse = () => {
 
   const onDrop = useCallback((acceptedFiles: any) => {
     setFileURL(acceptedFiles);
+    setFileName(acceptedFiles[0].name)
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
@@ -147,7 +148,7 @@ const createCourse = () => {
             <div {...getRootProps({})} className='p-16 mt-10 ml-40 mr-40 w-1/2 border border-neutral-200 dropbox'>
 
               <input {...getInputProps()} />
-              {fileURL ? JSON.parse((fileURL[0])).name : isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
+              {fileURL ? <>{(fileName)}</> : isDragActive ? <p>Drop the files here ...</p> : <p>Drag 'n' drop some files here, or click to select files</p>}
             </div>
 
             <div className="button-wrapper flex">
