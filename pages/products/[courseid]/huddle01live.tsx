@@ -6,7 +6,7 @@ import { useMoralis, useWeb3Contract } from "react-moralis";
 import { useHuddle01, useEventListener } from '@huddle01/react';
 import { ethers } from 'ethers';
 import lighthouse from '@lighthouse-web3/sdk';
-const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
+const LIGHTHOUSE_API_KEY = process.env.LIGHTHOUSE_STORAGE_API;
 import contractAddress from '../../../constants/Wis3Address.json'
 import abi from '../../../constants/Wis3.json'
 
@@ -286,7 +286,7 @@ export default function () {
         console.log(roomId);
         const response = await lighthouse.textUploadEncrypted(
             roomId,
-            LIGHTHOUSE_API_KEY,
+            process.env.LIGHTHOUSE_STORAGE_API || "s",
             sign.publicKey,
             sign.signedMessage
         );

@@ -20,6 +20,7 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/comments/index.js", "pages/api/comments/index.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/comments/index.js", "pages/api/comments/index.ts","src/**/*.ts",
+  "test/**/*.spec.ts"],
   "exclude": ["node_modules"]
 }
