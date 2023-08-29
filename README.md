@@ -4,7 +4,7 @@ This project was made during ETHGlobal - HackFS'23
 
 ### 🥇 $2500 Ceramic
 
-### 🥉 $500 Huddle01
+### 🥉 $200 Huddle01
 
 ### Create course, sell courses and buy courses. 
 
