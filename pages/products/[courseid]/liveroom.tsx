@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useEventListener, useHuddle01 } from "@huddle01/react";
 import { Audio, Video } from "@huddle01/react/components";
 import lighthouse from '@lighthouse-web3/sdk';
-const LIGHTHOUSE_API_KEY = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
+const LightHouseTrigger = 'be64189e.15aac07bb7804b7bbbc339420a77e878';
 
 import {
     useAudio,
@@ -105,7 +105,7 @@ const App = () => {
             
             const response = await lighthouse.textUploadEncrypted(
                 roomId,
-                LIGHTHOUSE_API_KEY,
+                LightHouseTrigger,
                 sign.publicKey,
                 sign.signedMessage
             );

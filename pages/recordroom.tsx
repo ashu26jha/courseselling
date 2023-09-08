@@ -54,7 +54,6 @@ const recordRoom = () => {
 
     const handleLogin = async () => {
         await authenticateCeramic(ceramic, composeClient)
-        console.log(ceramic)
     }
 
     useEffect(() => {
@@ -246,8 +245,8 @@ const recordRoom = () => {
         );
 
         console.log(response);
-        var CID: string = response.data.Hash
-        console.log(response.data.Hash);
+        var CID: string = response.data[0].Hash
+        console.log(response.data[0].Hash);
         console.log("Lecture CID : ", lectureCID);
 
         return ({
