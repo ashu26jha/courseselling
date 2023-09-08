@@ -37,8 +37,8 @@ function Dropzone({ className }: { className: any }) {
             sig.publicKey,
             sig.signedMessage
         );
-        console.log(response.data.Hash);
-        await applyAccessConditions(response.data.Hash)
+        console.log(response.data[0].Hash);
+        await applyAccessConditions(response.data[0].Hash)
     }
 
     const decrypt = async () => {

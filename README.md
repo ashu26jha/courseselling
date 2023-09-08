@@ -6,6 +6,8 @@ This project was made during ETHGlobal - HackFS'23
 
 ### 🥉 $200 Huddle01
 
+Hash
+
 ### Create course, sell courses and buy courses. 
 
 Decentralised course platform, people can create, sell, buy course all in decentralised ecosystem. It allows seemless integration among SDK.
